@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inspección - Inyección y Soplado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .stat-card p {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Sistema de Inspección de Procesos</h1>
+            <p>Área de Inyección y Soplado</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('nueva')">➕ Nueva Inspección</button>
+            <button class="tab" onclick="showTab('historial')">📊 Historial</button>
+            <button class="tab" onclick="showTab('estadisticas')">📈 Estadísticas</button>
+        </div>
+
+        <div class="content">
+            <!-- TAB: NUEVA INSPECCIÓN -->
+            <div id="tab-nueva" class="tab-content active">
+                <form id="formInspeccion">
+                    <!-- SECCIÓN: INFORMACIÓN GENERAL -->
+                    <div class="form-section">
+                        <h3>📅 Información General</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Fecha de Inspección *</label>
+                                <input type="date" id="fechaInspeccion" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Turno de Inspección *</label>
+                                <select id="turnoInspeccion" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Inspector *</label>
+                                <input type="text" id="inspector" required placeholder="Nombre del inspector">
+                            </div>
+                            <div class="form-group">
+                                <label>Coordinador Calidad de Turno *</label>
+                                <input type="text" id="coordinadorCalidad" required placeholder="Nombre del coordinador">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: MÁQUINA Y PRODUCCIÓN -->
+                    <div class="form-section">
+                        <h3>🏭 Máquina y Producción</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>N° de Máquina *</label>
+                                <input type="text" id="numMaquina" required placeholder="Ej: I-35, S-10">
+                            </div>
+                            <div class="form-group">
+                                <label>Coordinador Producción de Turno *</label>
+                                <input type="text" id="coordinadorProduccion" required placeholder="Nombre del coordinador">
+                            </div>
+                            <div class="form-group">
+                                <label>Orden de Producción *</label>
+                                <input type="text" id="ordenProduccion" required placeholder="Número de orden">
+                            </div>
+                            <div class="form-group">
+                                <label>Producto *</label>
+                                <input type="text" id="producto" required placeholder="Nombre del producto">
+                            </div>
+                            <div class="form-group">
+                                <label>Cliente</label>
+                                <input type="text" id="cliente" placeholder="Nombre del cliente">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: RESULTADO DE INSPECCIÓN -->
+                    <div class="form-section">
+                        <h3>✅ Resultado de Inspección</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Resultado *</label>
+                                <select id="resultado" required onchange="toggleDefectos()">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="CONFORME">CONFORME</option>
+                                    <option value="NO CONFORME">NO CONFORME</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="grupoTipoDefecto" style="display: none;">
+                                <label>Tipo de Defecto</label>
+                                <input type="text" id="tipoDefecto" placeholder="Ej: Dimensional, Visual, etc.">
+                            </div>
+                            <div class="form-group full-width" id="grupoProblema" style="display: none;">
+                                <label>Problema/Defecto</label>
+                                <textarea id="problema" placeholder="Descripción detallada del problema o defecto encontrado"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Tarjeta</label>
+                                <select id="tipoTarjeta">
+                                    <option value="">Sin tarjeta</option>
+                                    <option value="TARJETA AMARILLA">TARJETA AMARILLA</option>
+                                    <option value="TARJETA ROJA">TARJETA ROJA</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: OPERARIOS -->
+                    <div class="form-section">
+                        <h3>👥 Operarios</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Operario 1</label>
+                                <input type="text" id="operario1" placeholder="Nombre o código">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno Operario 1</label>
+                                <select id="turnoOperario1">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Operario 2</label>
+                                <input type="text" id="operario2" placeholder="Nombre o código">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno Operario 2</label>
+                                <select id="turnoOperario2">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: CAJAS PRODUCIDAS -->
+                    <div class="form-section">
+                        <h3>📦 Cajas Producidas</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cajas Completas</label>
+                                <input type="text" id="cajasCompletas" placeholder="Ej: 33 X 333">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Producción (Caja Completa)</label>
+                                <input type="date" id="fechaCajasCompletas">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno (Caja Completa)</label>
+                                <select id="turnoCajasCompletas">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 20px 0 15px 0; color: #6c757d;">Cajas Saldo</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cajas Saldo 1</label>
+                                <input type="text" id="cajasSaldo1" placeholder="Cantidad">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Producción</label>
+                                <input type="date" id="fechaSaldo1">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoSaldo1">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="margin-top: 15px;">
+                            <div class="form-group">
+                                <label>Cajas Saldo 2</label>
+                                <input type="text" id="cajasSaldo2" placeholder="Cantidad">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Producción</label>
+                                <input type="date" id="fechaSaldo2">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoSaldo2">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="margin-top: 15px;">
+                            <div class="form-group">
+                                <label>Cajas Saldo 3</label>
+                                <input type="text" id="cajasSaldo3" placeholder="Cantidad">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Producción</label>
+                                <input type="date" id="fechaSaldo3">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoSaldo3">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="margin-top: 15px;">
+                            <div class="form-group">
+                                <label>Cajas Saldo 4</label>
+                                <input type="text" id="cajasSaldo4" placeholder="Cantidad">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Producción</label>
+                                <input type="date" id="fechaSaldo4">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoSaldo4">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="margin-top: 15px;">
+                            <div class="form-group">
+                                <label>Cajas Saldo 5</label>
+                                <input type="text" id="cajasSaldo5" placeholder="Cantidad">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Producción</label>
+                                <input type="date" id="fechaSaldo5">
+                            </div>
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoSaldo5">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: OBSERVACIONES -->
+                    <div class="form-section">
+                        <h3>📝 Observaciones</h3>
+                        <div class="form-group full-width">
+                            <label>Observaciones Generales</label>
+                            <textarea id="observaciones" placeholder="Cualquier información adicional relevante..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">💾 Guardar Inspección</button>
+                        <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">🔄 Limpiar Formulario</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TAB: HISTORIAL -->
+            <div id="tab-historial" class="tab-content">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Buscar por máquina, producto, inspector, orden..." onkeyup="filtrarHistorial()">
+                </div>
+
+                <div class="btn-group" style="margin-bottom: 20px;">
+                    <button class="btn btn-success" onclick="exportarExcel()">📥 Exportar a Excel</button>
+                    <button class="btn btn-danger" onclick="borrarTodo()">🗑️ Borrar Todo</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="tablaHistorial">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Turno</th>
+                                <th>Máquina</th>
+                                <th>Producto</th>
+                                <th>Inspector</th>
+                                <th>Resultado</th>
+                                <th>Tarjeta</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTabla">
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3>No hay inspecciones registradas</h3>
+                    <p>Comienza creando una nueva inspección en la pestaña "Nueva Inspección"</p>
+                </div>
+            </div>
+
+            <!-- TAB: ESTADÍSTICAS -->
+            <div id="tab-estadisticas" class="tab-content">
+                <div class="stats" id="statsContainer">
+                    <!-- Se llena dinámicamente -->
+                </div>
+
+                <div class="form-section">
+                    <h3>📊 Resumen por Máquina</h3>
+                    <div id="resumenMaquinas"></div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🎯 Resumen por Resultado</h3>
+                    <div id="resumenResultados"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurar fecha actual por defecto
+        document.getElementById('fechaInspeccion').valueAsDate = new Date();
+
+        // Base de datos local
+        let inspecciones = JSON.parse(localStorage.getItem('inspecciones')) || [];
+
+        // Mostrar/ocultar campos de defecto
+        function toggleDefectos() {
+            const resultado = document.getElementById('resultado').value;
+            const grupoTipoDefecto = document.getElementById('grupoTipoDefecto');
+            const grupoProblema = document.getElementById('grupoProblema');
+            
+            if (resultado === 'NO CONFORME') {
+                grupoTipoDefecto.style.display = 'block';
+                grupoProblema.style.display = 'block';
+            } else {
+                grupoTipoDefecto.style.display = 'none';
+                grupoProblema.style.display = 'none';
+                document.getElementById('tipoDefecto').value = '';
+                document.getElementById('problema').value = '';
+            }
+        }
+
+        // Cambiar de tab
+        function showTab(tabName) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Mostrar el tab seleccionado
+            document.getElementById('tab-' + tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Actualizar contenido según el tab
+            if (tabName === 'historial') {
+                cargarHistorial();
+            } else if (tabName === 'estadisticas') {
+                cargarEstadisticas();
+            }
+        }
+
+        // Guardar inspección
+        document.getElementById('formInspeccion').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const inspeccion = {
+                id: Date.now(),
+                fechaInspeccion: document.getElementById('fechaInspeccion').value,
+                turnoInspeccion: document.getElementById('turnoInspeccion').value,
+                inspector: document.getElementById('inspector').value,
+                coordinadorCalidad: document.getElementById('coordinadorCalidad').value,
+                numMaquina: document.getElementById('numMaquina').value,
+                coordinadorProduccion: document.getElementById('coordinadorProduccion').value,
+                ordenProduccion: document.getElementById('ordenProduccion').value,
+                producto: document.getElementById('producto').value,
+                cliente: document.getElementById('cliente').value,
+                resultado: document.getElementById('resultado').value,
+                tipoDefecto: document.getElementById('tipoDefecto').value,
+                problema: document.getElementById('problema').value,
+                tipoTarjeta: document.getElementById('tipoTarjeta').value,
+                operario1: document.getElementById('operario1').value,
+                turnoOperario1: document.getElementById('turnoOperario1').value,
+                operario2: document.getElementById('operario2').value,
+                turnoOperario2: document.getElementById('turnoOperario2').value,
+                cajasCompletas: document.getElementById('cajasCompletas').value,
+                fechaCajasCompletas: document.getElementById('fechaCajasCompletas').value,
+                turnoCajasCompletas: document.getElementById('turnoCajasCompletas').value,
+                cajasSaldo1: document.getElementById('cajasSaldo1').value,
+                fechaSaldo1: document.getElementById('fechaSaldo1').value,
+                turnoSaldo1: document.getElementById('turnoSaldo1').value,
+                cajasSaldo2: document.getElementById('cajasSaldo2').value,
+                fechaSaldo2: document.getElementById('fechaSaldo2').value,
+                turnoSaldo2: document.getElementById('turnoSaldo2').value,
+                cajasSaldo3: document.getElementById('cajasSaldo3').value,
+                fechaSaldo3: document.getElementById('fechaSaldo3').value,
+                turnoSaldo3: document.getElementById('turnoSaldo3').value,
+                cajasSaldo4: document.getElementById('cajasSaldo4').value,
+                fechaSaldo4: document.getElementById('fechaSaldo4').value,
+                turnoSaldo4: document.getElementById('turnoSaldo4').value,
+                cajasSaldo5: document.getElementById('cajasSaldo5').value,
+                fechaSaldo5: document.getElementById('fechaSaldo5').value,
+                turnoSaldo5: document.getElementById('turnoSaldo5').value,
+                observaciones: document.getElementById('observaciones').value,
+                fechaRegistro: new Date().toISOString()
+            };
+
+            inspecciones.push(inspeccion);
+            localStorage.setItem('inspecciones', JSON.stringify(inspecciones));
+
+            alert('✅ Inspección guardada exitosamente');
+            limpiarFormulario();
+        });
+
+        // Limpiar formulario
+        function limpiarFormulario() {
+            document.getElementById('formInspeccion').reset();
+            document.getElementById('fechaInspeccion').valueAsDate = new Date();
+            toggleDefectos();
+        }
+
+        // Cargar historial
+        function cargarHistorial() {
+            const tbody = document.getElementById('cuerpoTabla');
+            const emptyState = document.getElementById('emptyState');
+
+            if (inspecciones.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            
+            tbody.innerHTML = inspecciones.map(insp => `
+                <tr>
+                    <td>${formatearFecha(insp.fechaInspeccion)}</td>
+                    <td><span class="badge badge-info">${insp.turnoInspeccion}</span></td>
+                    <td><strong>${insp.numMaquina}</strong></td>
+                    <td>${insp.producto}</td>
+                    <td>${insp.inspector}</td>
+                    <td>
+                        <span class="badge ${insp.resultado === 'CONFORME' ? 'badge-success' : 'badge-danger'}">
+                            ${insp.resultado}
+                        </span>
+                    </td>
+                    <td>
+                        ${insp.tipoTarjeta ? `<span class="badge ${insp.tipoTarjeta.includes('AMARILLA') ? 'badge-warning' : 'badge-danger'}">${insp.tipoTarjeta}</span>` : '-'}
+                    </td>
+                    <td class="action-buttons">
+                        <button class="btn btn-secondary btn-icon" onclick="verDetalle(${insp.id})">👁️ Ver</button>
+                        <button class="btn btn-danger btn-icon" onclick="eliminar(${insp.id})">🗑️</button>
+                    </td>
+                </tr>
+            `).reverse().join('');
+        }
+
+        // Filtrar historial
+        function filtrarHistorial() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#cuerpoTabla tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Ver detalle
+        function verDetalle(id) {
+            const insp = inspecciones.find(i => i.id === id);
+            if (!insp) return;
+
+            let html = `
+                <div style="max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">📋 Detalle de Inspección</h2>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #764ba2;">Información General</h3>
+                        <p><strong>Fecha:</strong> ${formatearFecha(insp.fechaInspeccion)}</p>
+                        <p><strong>Turno:</strong> ${insp.turnoInspeccion}</p>
+                        <p><strong>Inspector:</strong> ${insp.inspector}</p>
+                        <p><strong>Coordinador Calidad:</strong> ${insp.coordinadorCalidad}</p>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #764ba2;">Máquina y Producción</h3>
+                        <p><strong>Máquina:</strong> ${insp.numMaquina}</p>
+                        <p><strong>Coordinador Producción:</strong> ${insp.coordinadorProduccion}</p>
+                        <p><strong>Orden Producción:</strong> ${insp.ordenProduccion}</p>
+                        <p><strong>Producto:</strong> ${insp.producto}</p>
+                        <p><strong>Cliente:</strong> ${insp.cliente || 'N/A'}</p>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #764ba2;">Resultado</h3>
+                        <p><strong>Resultado:</strong> <span class="badge ${insp.resultado === 'CONFORME' ? 'badge-success' : 'badge-danger'}">${insp.resultado}</span></p>
+                        ${insp.tipoDefecto ? `<p><strong>Tipo Defecto:</strong> ${insp.tipoDefecto}</p>` : ''}
+                        ${insp.problema ? `<p><strong>Problema:</strong> ${insp.problema}</p>` : ''}
+                        ${insp.tipoTarjeta ? `<p><strong>Tarjeta:</strong> <span class="badge ${insp.tipoTarjeta.includes('AMARILLA') ? 'badge-warning' : 'badge-danger'}">${insp.tipoTarjeta}</span></p>` : ''}
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #764ba2;">Operarios</h3>
+                        ${insp.operario1 ? `<p><strong>Operario 1:</strong> ${insp.operario1} (${insp.turnoOperario1})</p>` : ''}
+                        ${insp.operario2 ? `<p><strong>Operario 2:</strong> ${insp.operario2} (${insp.turnoOperario2})</p>` : ''}
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #764ba2;">Cajas Producidas</h3>
+                        ${insp.cajasCompletas ? `<p><strong>Cajas Completas:</strong> ${insp.cajasCompletas} (${formatearFecha(insp.fechaCajasCompletas)} - ${insp.turnoCajasCompletas})</p>` : ''}
+                        ${insp.cajasSaldo1 ? `<p><strong>Saldo 1:</strong> ${insp.cajasSaldo1} (${formatearFecha(insp.fechaSaldo1)} - ${insp.turnoSaldo1})</p>` : ''}
+                        ${insp.cajasSaldo2 ? `<p><strong>Saldo 2:</strong> ${insp.cajasSaldo2} (${formatearFecha(insp.fechaSaldo2)} - ${insp.turnoSaldo2})</p>` : ''}
+                        ${insp.cajasSaldo3 ? `<p><strong>Saldo 3:</strong> ${insp.cajasSaldo3} (${formatearFecha(insp.fechaSaldo3)} - ${insp.turnoSaldo3})</p>` : ''}
+                        ${insp.cajasSaldo4 ? `<p><strong>Saldo 4:</strong> ${insp.cajasSaldo4} (${formatearFecha(insp.fechaSaldo4)} - ${insp.turnoSaldo4})</p>` : ''}
+                        ${insp.cajasSaldo5 ? `<p><strong>Saldo 5:</strong> ${insp.cajasSaldo5} (${formatearFecha(insp.fechaSaldo5)} - ${insp.turnoSaldo5})</p>` : ''}
+                    </div>
+
+                    ${insp.observaciones ? `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: #764ba2;">Observaciones</h3>
+                        <p>${insp.observaciones}</p>
+                    </div>
+                    ` : ''}
+
+                    <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimir</button>
+                </div>
+            `;
+
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Detalle de Inspección</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+                        h2, h3 { margin-top: 20px; }
+                        p { margin: 10px 0; }
+                        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+                        .badge-success { background: #d4edda; color: #155724; }
+                        .badge-danger { background: #f8d7da; color: #721c24; }
+                        .badge-warning { background: #fff3cd; color: #856404; }
+                        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; background: #667eea; color: white; font-weight: 600; }
+                        @media print { button { display: none; } }
+                    </style>
+                </head>
+                <body>${html}</body>
+                </html>
+            `);
+        }
+
+        // Eliminar inspección
+        function eliminar(id) {
+            if (confirm('¿Estás seguro de eliminar esta inspección?')) {
+                inspecciones = inspecciones.filter(i => i.id !== id);
+                localStorage.setItem('inspecciones', JSON.stringify(inspecciones));
+                cargarHistorial();
+                alert('✅ Inspección eliminada');
+            }
+        }
+
+        // Borrar todo
+        function borrarTodo() {
+            if (confirm('⚠️ ¿Estás seguro de eliminar TODAS las inspecciones? Esta acción no se puede deshacer.')) {
+                if (confirm('Esta es tu última oportunidad. ¿Realmente quieres borrar todo?')) {
+                    localStorage.removeItem('inspecciones');
+                    inspecciones = [];
+                    cargarHistorial();
+                    alert('✅ Todas las inspecciones han sido eliminadas');
+                }
+            }
+        }
+
+        // Exportar a Excel
+        function exportarExcel() {
+            if (inspecciones.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            let csv = 'Fecha de Inspeccion,Turno de Inspeccion,Inspector,Coordinador Calidad,N° Maquina,Coordinador Produccion,Orden Produccion,Producto,Cliente,Resultado,Tipo Defecto,Problema/Defecto,Tipo Tarjeta,Operario1,Turno Operario1,Operario2,Turno Operario2,Cajas Completas,Fecha Produccion Completas,Turno Completas,Cajas Saldo1,Fecha Saldo1,Turno Saldo1,Cajas Saldo2,Fecha Saldo2,Turno Saldo2,Cajas Saldo3,Fecha Saldo3,Turno Saldo3,Cajas Saldo4,Fecha Saldo4,Turno Saldo4,Cajas Saldo5,Fecha Saldo5,Turno Saldo5,Observaciones\n';
+
+            inspecciones.forEach(insp => {
+                csv += `${insp.fechaInspeccion},${insp.turnoInspeccion},${insp.inspector},${insp.coordinadorCalidad},${insp.numMaquina},${insp.coordinadorProduccion},${insp.ordenProduccion},${insp.producto},${insp.cliente},${insp.resultado},${insp.tipoDefecto},${insp.problema},${insp.tipoTarjeta},${insp.operario1},${insp.turnoOperario1},${insp.operario2},${insp.turnoOperario2},${insp.cajasCompletas},${insp.fechaCajasCompletas},${insp.turnoCajasCompletas},${insp.cajasSaldo1},${insp.fechaSaldo1},${insp.turnoSaldo1},${insp.cajasSaldo2},${insp.fechaSaldo2},${insp.turnoSaldo2},${insp.cajasSaldo3},${insp.fechaSaldo3},${insp.turnoSaldo3},${insp.cajasSaldo4},${insp.fechaSaldo4},${insp.turnoSaldo4},${insp.cajasSaldo5},${insp.fechaSaldo5},${insp.turnoSaldo5},"${insp.observaciones}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Inspecciones_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+        }
+
+        // Cargar estadísticas
+        function cargarEstadisticas() {
+            const total = inspecciones.length;
+            const conformes = inspecciones.filter(i => i.resultado === 'CONFORME').length;
+            const noConformes = inspecciones.filter(i => i.resultado === 'NO CONFORME').length;
+            const tarjetasAmarillas = inspecciones.filter(i => i.tipoTarjeta === 'TARJETA AMARILLA').length;
+            const tarjetasRojas = inspecciones.filter(i => i.tipoTarjeta === 'TARJETA ROJA').length;
+
+            document.getElementById('statsContainer').innerHTML = `
+                <div class="stat-card">
+                    <h4>Total Inspecciones</h4>
+                    <p>${total}</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    <h4>Conformes</h4>
+                    <p>${conformes}</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                    <h4>No Conformes</h4>
+                    <p>${noConformes}</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+                    <h4>Tarjetas Amarillas</h4>
+                    <p>${tarjetasAmarillas}</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%);">
+                    <h4>Tarjetas Rojas</h4>
+                    <p>${tarjetasRojas}</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                    <h4>Tasa Conformidad</h4>
+                    <p>${total > 0 ? ((conformes/total)*100).toFixed(1) : 0}%</p>
+                </div>
+            `;
+
+            // Resumen por máquina
+            const maquinas = {};
+            inspecciones.forEach(insp => {
+                if (!maquinas[insp.numMaquina]) {
+                    maquinas[insp.numMaquina] = { total: 0, conformes: 0, noConformes: 0 };
+                }
+                maquinas[insp.numMaquina].total++;
+                if (insp.resultado === 'CONFORME') {
+                    maquinas[insp.numMaquina].conformes++;
+                } else {
+                    maquinas[insp.numMaquina].noConformes++;
+                }
+            });
+
+            let htmlMaquinas = '<table style="width: 100%;"><tr><th>Máquina</th><th>Total</th><th>Conformes</th><th>No Conformes</th><th>% Conformidad</th></tr>';
+            Object.keys(maquinas).forEach(maq => {
+                const data = maquinas[maq];
+                const porcentaje = ((data.conformes/data.total)*100).toFixed(1);
+                htmlMaquinas += `<tr>
+                    <td><strong>${maq}</strong></td>
+                    <td>${data.total}</td>
+                    <td><span class="badge badge-success">${data.conformes}</span></td>
+                    <td><span class="badge badge-danger">${data.noConformes}</span></td>
+                    <td><strong>${porcentaje}%</strong></td>
+                </tr>`;
+            });
+            htmlMaquinas += '</table>';
+            document.getElementById('resumenMaquinas').innerHTML = htmlMaquinas;
+        }
+
+        // Formatear fecha
+        function formatearFecha(fecha) {
+            if (!fecha) return 'N/A';
+            const d = new Date(fecha + 'T00:00:00');
+            return d.toLocaleDateString('es-PE');
+        }
+
+        // Cargar datos al iniciar
+        cargarHistorial();
+    </script>
+</body>
+</html>
