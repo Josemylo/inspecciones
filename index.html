@@ -180,6 +180,11 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
+        input:read-only {
+            background: var(--bg);
+            color: var(--text-secondary);
+        }
+
         select {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
@@ -280,6 +285,12 @@
             gap: 12px;
         }
 
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
         .conditional-section {
             display: none;
             animation: slideDown 0.3s;
@@ -297,7 +308,7 @@
             }
             to {
                 opacity: 1;
-                max-height: 3000px;
+                max-height: 2000px;
             }
         }
 
@@ -468,7 +479,7 @@
         }
 
         @media (max-width: 640px) {
-            .grid-2 {
+            .grid-2, .grid-3 {
                 grid-template-columns: 1fr;
             }
             
@@ -560,19 +571,137 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label class="required">Orden de Producción</label>
-                            <input type="text" id="ordenProduccion" required placeholder="Número de orden">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="required">Orden de Producción</label>
+                                <input type="text" id="ordenProduccion" required placeholder="Número de orden">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="required">Cantidad a Producir</label>
+                                <input type="number" id="cantidadProducir" required placeholder="Cantidad">
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label class="required">Producto</label>
                             <input type="text" id="producto" required placeholder="Nombre del producto">
                         </div>
+                    </div>
+
+                    <!-- OPERARIOS -->
+                    <div class="section-card">
+                        <div class="section-title">👥 Operarios</div>
+                        
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Operario 1</label>
+                                <input type="text" id="operario1" placeholder="Nombre o código">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoOperario1">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Operario 2</label>
+                                <input type="text" id="operario2" placeholder="Nombre o código">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoOperario2">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAJAS INSPECCIONADAS -->
+                    <div class="section-card">
+                        <div class="section-title">📦 Cajas Inspeccionadas</div>
+                        
+                        <!-- Cajas Completas -->
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label># Cajas Completas</label>
+                                <input type="number" id="cajasCompletas" placeholder="0" oninput="calcularTotal()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Unidades x Caja</label>
+                                <input type="number" id="unidadesCajaCompleta" placeholder="0" oninput="calcularTotal()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Subtotal</label>
+                                <input type="number" id="subtotalCompletas" placeholder="0" readonly>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Fecha Producción</label>
+                                <input type="date" id="fechaCajasCompletas">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select id="turnoCajasCompletas">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="DIA">DÍA</option>
+                                    <option value="NOCHE">NOCHE</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+
+                        <!-- Cajas Saldo Dinámicas -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div style="font-weight: 600; color: var(--text);">Cajas Saldo</div>
+                            <button type="button" class="btn btn-outline btn-small" onclick="agregarCajaSaldo()" id="btnAgregarCaja">
+                                ➕ Agregar Caja
+                            </button>
+                        </div>
+
+                        <div id="cajasSaldoContainer"></div>
+
+                        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+
+                        <!-- Total -->
+                        <div class="form-group">
+                            <label style="font-size: 16px; font-weight: 600;">Total Unidades Inspeccionadas</label>
+                            <input type="number" id="totalUnidades" placeholder="0" readonly style="font-size: 18px; font-weight: 600; background: var(--bg);">
+                        </div>
+                    </div>
+
+                    <!-- DATOS DE INSPECCIÓN -->
+                    <div class="section-card">
+                        <div class="section-title">🔍 Datos de Inspección</div>
+                        
+                        <div class="form-group">
+                            <label class="required"># Cajas Muestreadas</label>
+                            <input type="number" id="cajasMuestreadas" required placeholder="0">
+                        </div>
 
                         <div class="form-group">
-                            <label>Cliente</label>
-                            <input type="text" id="cliente" placeholder="Nombre del cliente">
+                            <label class="required"># Unidades Muestreadas</label>
+                            <input type="number" id="unidadesMuestreadas" required placeholder="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label># Unidades Defectuosas</label>
+                            <input type="number" id="unidadesDefectuosas" placeholder="0 (opcional)">
                         </div>
                     </div>
 
@@ -620,82 +749,6 @@
                                     <option value="TARJETA ROJA">TARJETA ROJA</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <!-- OPERARIOS -->
-                        <div class="section-card">
-                            <div class="section-title">👥 Operarios</div>
-                            
-                            <div class="grid-2">
-                                <div class="form-group">
-                                    <label>Operario 1</label>
-                                    <input type="text" id="operario1" placeholder="Nombre o código">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Turno</label>
-                                    <select id="turnoOperario1">
-                                        <option value="">Seleccionar...</option>
-                                        <option value="DIA">DÍA</option>
-                                        <option value="NOCHE">NOCHE</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="grid-2">
-                                <div class="form-group">
-                                    <label>Operario 2</label>
-                                    <input type="text" id="operario2" placeholder="Nombre o código">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Turno</label>
-                                    <select id="turnoOperario2">
-                                        <option value="">Seleccionar...</option>
-                                        <option value="DIA">DÍA</option>
-                                        <option value="NOCHE">NOCHE</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- CAJAS -->
-                        <div class="section-card">
-                            <div class="section-title">📦 Cajas Producidas</div>
-                            
-                            <!-- Cajas Completas -->
-                            <div class="form-group">
-                                <label>Cajas Completas</label>
-                                <input type="text" id="cajasCompletas" placeholder="Ej: 33 X 333">
-                            </div>
-
-                            <div class="grid-2">
-                                <div class="form-group">
-                                    <label>Fecha Producción</label>
-                                    <input type="date" id="fechaCajasCompletas">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Turno</label>
-                                    <select id="turnoCajasCompletas">
-                                        <option value="">Seleccionar...</option>
-                                        <option value="DIA">DÍA</option>
-                                        <option value="NOCHE">NOCHE</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
-
-                            <!-- Cajas Saldo Dinámicas -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                                <div style="font-weight: 600; color: var(--text);">Cajas Saldo</div>
-                                <button type="button" class="btn btn-outline btn-small" onclick="agregarCajaSaldo()" id="btnAgregarCaja">
-                                    ➕ Agregar Caja
-                                </button>
-                            </div>
-
-                            <div id="cajasSaldoContainer"></div>
                         </div>
                     </div>
 
@@ -745,8 +798,8 @@
                                 <th>Turno</th>
                                 <th>Máquina</th>
                                 <th>Producto</th>
+                                <th>% Hallado</th>
                                 <th>Resultado</th>
-                                <th>Inspector</th>
                             </tr>
                         </thead>
                         <tbody id="cuerpoTabla"></tbody>
@@ -785,6 +838,31 @@
         // Configurar fecha actual
         document.getElementById('fechaInspeccion').valueAsDate = new Date();
 
+        // Calcular total de unidades
+        function calcularTotal() {
+            let total = 0;
+            
+            // Cajas completas
+            const cajasCompletas = parseFloat(document.getElementById('cajasCompletas').value) || 0;
+            const unidadesCaja = parseFloat(document.getElementById('unidadesCajaCompleta').value) || 0;
+            const subtotal = cajasCompletas * unidadesCaja;
+            document.getElementById('subtotalCompletas').value = subtotal;
+            total += subtotal;
+            
+            // Cajas saldo
+            for (let i = 1; i <= 5; i++) {
+                const cajasInput = document.getElementById(`cajasSaldo${i}`);
+                const unidadesInput = document.getElementById(`unidadesCaja${i}`);
+                if (cajasInput && unidadesInput) {
+                    const cajas = parseFloat(cajasInput.value) || 0;
+                    const unidades = parseFloat(unidadesInput.value) || 0;
+                    total += cajas * unidades;
+                }
+            }
+            
+            document.getElementById('totalUnidades').value = total;
+        }
+
         // Toggle condicional NO CONFORME
         function toggleCondicional() {
             const resultado = document.getElementById('resultado').value;
@@ -792,16 +870,15 @@
             
             if (resultado === 'NO CONFORME') {
                 seccion.classList.add('active');
-                // Hacer campos requeridos
                 document.getElementById('tipoDefecto').required = true;
                 document.getElementById('problema').required = true;
             } else {
                 seccion.classList.remove('active');
-                // Quitar requeridos
                 document.getElementById('tipoDefecto').required = false;
                 document.getElementById('problema').required = false;
-                // Limpiar campos
-                limpiarSeccionNoConforme();
+                document.getElementById('tipoDefecto').value = '';
+                document.getElementById('problema').value = '';
+                document.getElementById('tipoTarjeta').value = '';
             }
         }
 
@@ -826,9 +903,21 @@
                     </button>
                 </div>
                 
-                <div class="form-group">
-                    <label>Cantidad</label>
-                    <input type="text" id="cajasSaldo${cajasSaldoCount}" placeholder="Cantidad">
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label># Cajas</label>
+                        <input type="number" id="cajasSaldo${cajasSaldoCount}" placeholder="0" oninput="calcularTotal()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Unidades x Caja</label>
+                        <input type="number" id="unidadesCaja${cajasSaldoCount}" placeholder="0" oninput="calcularTotal()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Subtotal</label>
+                        <input type="number" id="subtotalSaldo${cajasSaldoCount}" placeholder="0" readonly>
+                    </div>
                 </div>
                 
                 <div class="grid-2">
@@ -850,6 +939,21 @@
             
             container.appendChild(cajaDiv);
             
+            // Actualizar subtotales cuando cambian
+            document.getElementById(`cajasSaldo${cajasSaldoCount}`).addEventListener('input', function() {
+                const cajas = parseFloat(this.value) || 0;
+                const unidades = parseFloat(document.getElementById(`unidadesCaja${cajasSaldoCount}`).value) || 0;
+                document.getElementById(`subtotalSaldo${cajasSaldoCount}`).value = cajas * unidades;
+                calcularTotal();
+            });
+            
+            document.getElementById(`unidadesCaja${cajasSaldoCount}`).addEventListener('input', function() {
+                const cajas = parseFloat(document.getElementById(`cajasSaldo${cajasSaldoCount}`).value) || 0;
+                const unidades = parseFloat(this.value) || 0;
+                document.getElementById(`subtotalSaldo${cajasSaldoCount}`).value = cajas * unidades;
+                calcularTotal();
+            });
+            
             if (cajasSaldoCount >= 5) {
                 document.getElementById('btnAgregarCaja').disabled = true;
                 document.getElementById('btnAgregarCaja').style.opacity = '0.5';
@@ -864,27 +968,8 @@
                 cajasSaldoCount--;
                 document.getElementById('btnAgregarCaja').disabled = false;
                 document.getElementById('btnAgregarCaja').style.opacity = '1';
+                calcularTotal();
             }
-        }
-
-        // Limpiar sección no conforme
-        function limpiarSeccionNoConforme() {
-            document.getElementById('tipoDefecto').value = '';
-            document.getElementById('problema').value = '';
-            document.getElementById('tipoTarjeta').value = '';
-            document.getElementById('operario1').value = '';
-            document.getElementById('turnoOperario1').value = '';
-            document.getElementById('operario2').value = '';
-            document.getElementById('turnoOperario2').value = '';
-            document.getElementById('cajasCompletas').value = '';
-            document.getElementById('fechaCajasCompletas').value = '';
-            document.getElementById('turnoCajasCompletas').value = '';
-            
-            // Limpiar cajas saldo
-            document.getElementById('cajasSaldoContainer').innerHTML = '';
-            cajasSaldoCount = 0;
-            document.getElementById('btnAgregarCaja').disabled = false;
-            document.getElementById('btnAgregarCaja').style.opacity = '1';
         }
 
         // Mostrar alerta
@@ -903,7 +988,6 @@
                 alert.remove();
             }, 5000);
             
-            // Scroll al top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -921,12 +1005,15 @@
                 const cajasSaldo = {};
                 for (let i = 1; i <= 5; i++) {
                     const inputCajas = document.getElementById(`cajasSaldo${i}`);
+                    const inputUnidades = document.getElementById(`unidadesCaja${i}`);
                     if (inputCajas && inputCajas.value) {
                         cajasSaldo[`cajasSaldo${i}`] = inputCajas.value;
+                        cajasSaldo[`unidadesCaja${i}`] = inputUnidades ? inputUnidades.value : '';
                         cajasSaldo[`fechaSaldo${i}`] = document.getElementById(`fechaSaldo${i}`).value;
                         cajasSaldo[`turnoSaldo${i}`] = document.getElementById(`turnoSaldo${i}`).value;
                     } else {
                         cajasSaldo[`cajasSaldo${i}`] = '';
+                        cajasSaldo[`unidadesCaja${i}`] = '';
                         cajasSaldo[`fechaSaldo${i}`] = '';
                         cajasSaldo[`turnoSaldo${i}`] = '';
                     }
@@ -940,20 +1027,24 @@
                     numMaquina: document.getElementById('numMaquina').value,
                     coordinadorProduccion: document.getElementById('coordinadorProduccion').value,
                     ordenProduccion: document.getElementById('ordenProduccion').value,
+                    cantidadProducir: document.getElementById('cantidadProducir').value,
                     producto: document.getElementById('producto').value,
-                    cliente: document.getElementById('cliente').value,
-                    resultado: document.getElementById('resultado').value,
-                    tipoDefecto: document.getElementById('tipoDefecto').value,
-                    problema: document.getElementById('problema').value,
-                    tipoTarjeta: document.getElementById('tipoTarjeta').value,
                     operario1: document.getElementById('operario1').value,
                     turnoOperario1: document.getElementById('turnoOperario1').value,
                     operario2: document.getElementById('operario2').value,
                     turnoOperario2: document.getElementById('turnoOperario2').value,
                     cajasCompletas: document.getElementById('cajasCompletas').value,
+                    unidadesCajaCompleta: document.getElementById('unidadesCajaCompleta').value,
                     fechaCajasCompletas: document.getElementById('fechaCajasCompletas').value,
                     turnoCajasCompletas: document.getElementById('turnoCajasCompletas').value,
                     ...cajasSaldo,
+                    cajasMuestreadas: document.getElementById('cajasMuestreadas').value,
+                    unidadesMuestreadas: document.getElementById('unidadesMuestreadas').value,
+                    unidadesDefectuosas: document.getElementById('unidadesDefectuosas').value,
+                    resultado: document.getElementById('resultado').value,
+                    tipoDefecto: document.getElementById('tipoDefecto').value,
+                    problema: document.getElementById('problema').value,
+                    tipoTarjeta: document.getElementById('tipoTarjeta').value,
                     observaciones: document.getElementById('observaciones').value
                 };
 
@@ -985,6 +1076,8 @@
             toggleCondicional();
             document.getElementById('cajasSaldoContainer').innerHTML = '';
             cajasSaldoCount = 0;
+            document.getElementById('totalUnidades').value = '';
+            document.getElementById('subtotalCompletas').value = '';
         }
 
         // Cambiar tab
@@ -1027,20 +1120,24 @@
                     return;
                 }
 
-                tbody.innerHTML = inspecciones.map(insp => `
-                    <tr>
-                        <td>${formatearFecha(insp['Fecha de inspeccion'])}</td>
-                        <td><span class="badge badge-info">${insp['Turno de Inspeccion']}</span></td>
-                        <td><strong>${insp['N° de Maquina']}</strong></td>
-                        <td>${insp['Producto']}</td>
-                        <td>
-                            <span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">
-                                ${insp['Resultado']}
-                            </span>
-                        </td>
-                        <td>${insp['Inspector']}</td>
-                    </tr>
-                `).reverse().join('');
+                tbody.innerHTML = inspecciones.map(insp => {
+                    const porcentajeHallado = insp['% Hallado'] ? (parseFloat(insp['% Hallado']) * 100).toFixed(2) + '%' : 'N/A';
+                    
+                    return `
+                        <tr>
+                            <td>${formatearFecha(insp['Fecha de inspeccion'])}</td>
+                            <td><span class="badge badge-info">${insp['Turno de Inspeccion']}</span></td>
+                            <td><strong>${insp['N° de Maquina']}</strong></td>
+                            <td>${insp['Producto']}</td>
+                            <td><strong>${porcentajeHallado}</strong></td>
+                            <td>
+                                <span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">
+                                    ${insp['Resultado']}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).reverse().join('');
 
             } catch (error) {
                 console.error('Error al cargar historial:', error);
