@@ -478,6 +478,54 @@
             background-position: 12px center;
         }
 
+        /* Estilos para la cámara */
+        .camera-container {
+            position: relative;
+            margin-top: 12px;
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            border: 2px dashed var(--border);
+            display: none;
+            object-fit: cover;
+        }
+
+        .camera-preview.active {
+            display: block;
+        }
+
+        #videoPreview {
+            width: 100%;
+            border-radius: 8px;
+            display: none;
+        }
+
+        #videoPreview.active {
+            display: block;
+        }
+
+        .btn-camera {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            color: white;
+            margin-top: 8px;
+        }
+
+        .btn-remove-photo {
+            background: var(--danger);
+            color: white;
+            margin-top: 8px;
+        }
+
+        .image-thumbnail {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
         @media (max-width: 640px) {
             .grid-2, .grid-3 {
                 grid-template-columns: 1fr;
@@ -750,6 +798,54 @@
                                 </select>
                             </div>
                         </div>
+
+                        <!-- CAPTURA DE FOTO -->
+                        <div class="section-card">
+                            <div class="section-title">📷 Evidencia Fotográfica</div>
+                            
+                            <div class="form-group">
+                                <label>Foto del Defecto (Opcional)</label>
+                                
+                                <div class="camera-container">
+                                    <!-- Vista previa de video -->
+                                    <video id="videoPreview" autoplay playsinline></video>
+                                    
+                                    <!-- Vista previa de la foto capturada -->
+                                    <img id="fotoPreview" class="camera-preview" alt="Vista previa de la foto">
+                                    
+                                    <!-- Input file oculto -->
+                                    <input type="file" id="inputFoto" accept="image/*" capture="environment" style="display: none;" onchange="manejarArchivoFoto(event)">
+                                    
+                                    <!-- Botones -->
+                                    <div id="botonesCamera">
+                                        <button type="button" class="btn btn-camera" onclick="abrirCamara()">
+                                            📸 Tomar Foto
+                                        </button>
+                                        <button type="button" class="btn btn-outline btn-small" onclick="seleccionarArchivo()" style="margin-top: 8px;">
+                                            📁 Seleccionar desde Galería
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="botonesAccion" style="display: none;">
+                                        <button type="button" class="btn btn-success" onclick="capturarFoto()">
+                                            ✓ Capturar
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="cancelarCamara()" style="margin-top: 8px;">
+                                            ✕ Cancelar
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="botonesManejo" style="display: none;">
+                                        <button type="button" class="btn btn-remove-photo" onclick="eliminarFoto()">
+                                            🗑️ Eliminar Foto
+                                        </button>
+                                        <button type="button" class="btn btn-outline btn-small" onclick="verFotoCompleta()" style="margin-top: 8px;">
+                                            🔍 Ver Foto
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- OBSERVACIONES -->
@@ -794,12 +890,15 @@
                     <table id="tablaHistorial">
                         <thead>
                             <tr>
+                                <th>Item</th>
+                                <th>Guardado</th>
                                 <th>Fecha</th>
                                 <th>Turno</th>
                                 <th>Máquina</th>
                                 <th>Producto</th>
                                 <th>% Hallado</th>
                                 <th>Resultado</th>
+                                <th>Imagen</th>
                             </tr>
                         </thead>
                         <tbody id="cuerpoTabla"></tbody>
@@ -827,16 +926,130 @@
         </div>
     </div>
 
+    <!-- Canvas oculto para capturar foto -->
+    <canvas id="canvas" style="display: none;"></canvas>
+
     <script>
         // URL de Google Apps Script
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4pNNMHQ5KXe_qU2lMtJrrfsgeud_7KXx-vHE6XQI7ozvFjeP3IRoVL0qpxmLqBtZ3/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1c5H4RudphAljCdwAkHHLGx4V-YvuR_tM7yRUYLsIGGB6UZ0TuTdeTZMkP-tlY3yO/exec';
         
         // Variables globales
         let cajasSaldoCount = 0;
         let inspecciones = [];
+        let stream = null;
+        let fotoCapturada = null;
 
         // Configurar fecha actual
         document.getElementById('fechaInspeccion').valueAsDate = new Date();
+
+        // ==================== FUNCIONES DE CÁMARA ====================
+        
+        function seleccionarArchivo() {
+            document.getElementById('inputFoto').click();
+        }
+
+        function manejarArchivoFoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fotoCapturada = e.target.result;
+                    mostrarFotoCapturada();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function abrirCamara() {
+            try {
+                const video = document.getElementById('videoPreview');
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' },
+                    audio: false 
+                });
+                
+                video.srcObject = stream;
+                video.classList.add('active');
+                
+                document.getElementById('botonesCamera').style.display = 'none';
+                document.getElementById('botonesAccion').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error al acceder a la cámara:', error);
+                mostrarAlerta('No se pudo acceder a la cámara. Usa "Seleccionar desde Galería" en su lugar.', 'error');
+            }
+        }
+
+        function capturarFoto() {
+            const video = document.getElementById('videoPreview');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            
+            // Configurar el canvas con las dimensiones del video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Dibujar el frame actual del video en el canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convertir a base64
+            fotoCapturada = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Detener la cámara
+            detenerCamara();
+            
+            // Mostrar la foto capturada
+            mostrarFotoCapturada();
+        }
+
+        function mostrarFotoCapturada() {
+            const fotoPreview = document.getElementById('fotoPreview');
+            fotoPreview.src = fotoCapturada;
+            fotoPreview.classList.add('active');
+            
+            document.getElementById('botonesCamera').style.display = 'none';
+            document.getElementById('botonesAccion').style.display = 'none';
+            document.getElementById('botonesManejo').style.display = 'block';
+        }
+
+        function cancelarCamara() {
+            detenerCamara();
+            document.getElementById('botonesCamera').style.display = 'block';
+            document.getElementById('botonesAccion').style.display = 'none';
+        }
+
+        function detenerCamara() {
+            const video = document.getElementById('videoPreview');
+            
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            
+            video.classList.remove('active');
+            video.srcObject = null;
+        }
+
+        function eliminarFoto() {
+            fotoCapturada = null;
+            
+            const fotoPreview = document.getElementById('fotoPreview');
+            fotoPreview.src = '';
+            fotoPreview.classList.remove('active');
+            
+            document.getElementById('inputFoto').value = '';
+            document.getElementById('botonesCamera').style.display = 'block';
+            document.getElementById('botonesManejo').style.display = 'none';
+        }
+
+        function verFotoCompleta() {
+            if (fotoCapturada) {
+                const ventana = window.open('', '_blank');
+                ventana.document.write('<img src="' + fotoCapturada + '" style="max-width: 100%; height: auto;">');
+            }
+        }
+
+        // ==================== FIN FUNCIONES DE CÁMARA ====================
 
         // Calcular total de unidades
         function calcularTotal() {
@@ -879,6 +1092,9 @@
                 document.getElementById('tipoDefecto').value = '';
                 document.getElementById('problema').value = '';
                 document.getElementById('tipoTarjeta').value = '';
+                
+                // Limpiar foto si cambia a CONFORME
+                eliminarFoto();
             }
         }
 
@@ -1045,7 +1261,8 @@
                     tipoDefecto: document.getElementById('tipoDefecto').value,
                     problema: document.getElementById('problema').value,
                     tipoTarjeta: document.getElementById('tipoTarjeta').value,
-                    observaciones: document.getElementById('observaciones').value
+                    observaciones: document.getElementById('observaciones').value,
+                    imagenBase64: fotoCapturada || ''  // Agregar la foto en base64
                 };
 
                 const response = await fetch(SCRIPT_URL, {
@@ -1057,7 +1274,8 @@
                     body: JSON.stringify(inspeccion)
                 });
 
-                mostrarAlerta('✅ Inspección guardada exitosamente en Google Sheets', 'success');
+                mostrarAlerta('✅ Inspección guardada exitosamente en Google Sheets' + 
+                             (fotoCapturada ? ' (con foto)' : ''), 'success');
                 limpiarFormulario();
                 
             } catch (error) {
@@ -1078,6 +1296,8 @@
             cajasSaldoCount = 0;
             document.getElementById('totalUnidades').value = '';
             document.getElementById('subtotalCompletas').value = '';
+            eliminarFoto();
+            detenerCamara();
         }
 
         // Cambiar tab
@@ -1122,9 +1342,14 @@
 
                 tbody.innerHTML = inspecciones.map(insp => {
                     const porcentajeHallado = insp['% Hallado'] ? (parseFloat(insp['% Hallado']) * 100).toFixed(2) + '%' : 'N/A';
+                    const timestamp = insp['Timestamp'] ? formatearFechaHora(insp['Timestamp']) : 'N/A';
+                    const item = insp['Item'] || 'N/A';
+                    const imagenUrl = insp['Imagen'] || '';
                     
                     return `
                         <tr>
+                            <td><strong>#${item}</strong></td>
+                            <td style="font-size: 12px;">${timestamp}</td>
                             <td>${formatearFecha(insp['Fecha de inspeccion'])}</td>
                             <td><span class="badge badge-info">${insp['Turno de Inspeccion']}</span></td>
                             <td><strong>${insp['N° de Maquina']}</strong></td>
@@ -1134,6 +1359,9 @@
                                 <span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">
                                     ${insp['Resultado']}
                                 </span>
+                            </td>
+                            <td>
+                                ${imagenUrl ? `<a href="${imagenUrl}" target="_blank" style="color: var(--primary);">📷 Ver</a>` : '-'}
                             </td>
                         </tr>
                     `;
@@ -1195,6 +1423,7 @@
             const total = inspecciones.length;
             const conformes = inspecciones.filter(i => i['Resultado'] === 'CONFORME').length;
             const noConformes = inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').length;
+            const conFoto = inspecciones.filter(i => i['Imagen'] && i['Imagen'] !== '').length;
 
             document.getElementById('statsContainer').innerHTML = `
                 <div class="stat-card">
@@ -1213,6 +1442,10 @@
                     <h4>Tasa Conformidad</h4>
                     <p>${total > 0 ? ((conformes/total)*100).toFixed(1) : 0}%</p>
                 </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);">
+                    <h4>Con Evidencia Fotográfica</h4>
+                    <p>${conFoto}</p>
+                </div>
             `;
         }
 
@@ -1223,13 +1456,26 @@
             return d.toLocaleDateString('es-PE');
         }
 
+        // Formatear fecha y hora
+        function formatearFechaHora(fecha) {
+            if (!fecha) return 'N/A';
+            const d = new Date(fecha);
+            return d.toLocaleDateString('es-PE') + ' ' + d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+        }
+
         // Cargar historial al inicio
         window.addEventListener('load', () => {
             cargarHistorial();
         });
+
+        // Detener cámara al cerrar la página
+        window.addEventListener('beforeunload', () => {
+            detenerCamara();
+        });
     </script>
 </body>
 </html>
+
 
 
 
