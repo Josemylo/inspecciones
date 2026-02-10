@@ -50,16 +50,8 @@
             z-index: 100;
         }
 
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .header p {
-            font-size: 13px;
-            opacity: 0.9;
-        }
+        .header h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+        .header p { font-size: 13px; opacity: 0.9; }
 
         .tabs {
             display: flex;
@@ -71,10 +63,7 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
+        .tabs::-webkit-scrollbar { display: none; }
 
         .tab {
             flex: 1;
@@ -91,39 +80,20 @@
             position: relative;
             white-space: nowrap;
         }
-
-        .tab.active {
-            color: var(--primary);
-        }
-
+        .tab.active { color: var(--primary); }
         .tab.active::after {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             height: 2px;
             background: var(--primary);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 0 80px 0;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 0 80px 0; }
+        .content { padding: 16px; }
 
-        .content {
-            padding: 16px;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -148,10 +118,7 @@
             gap: 8px;
         }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
+        .form-group { margin-bottom: 16px; }
         .form-group label {
             display: block;
             font-size: 14px;
@@ -159,11 +126,7 @@
             color: var(--text);
             margin-bottom: 6px;
         }
-
-        .form-group label.required::after {
-            content: ' *';
-            color: var(--danger);
-        }
+        .form-group label.required::after { content: ' *'; color: var(--danger); }
 
         input, select, textarea {
             width: 100%;
@@ -177,359 +140,124 @@
             transition: all 0.2s;
             -webkit-appearance: none;
         }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
-        input:read-only {
-            background: var(--bg);
-            color: var(--text-secondary);
-        }
-
+        input:read-only { background: var(--bg); color: var(--text-secondary); }
         select {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 12px center;
             padding-right: 36px;
         }
+        textarea { resize: vertical; min-height: 100px; }
 
-        textarea {
-            resize: vertical;
-            min-height: 100px;
+        /* ===================== CAMPO "OTROS" ===================== */
+        .otros-container {
+            margin-top: 8px;
+            padding: 10px 12px;
+            background: #f0f4ff;
+            border: 1.5px solid var(--primary);
+            border-radius: 8px;
+            animation: slideDown 0.25s ease;
+            display: none;
         }
+        .otros-container.visible { display: block; }
+        .otros-container label {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .otros-container input {
+            border-color: var(--primary);
+            background: white;
+        }
+        /* ========================================================= */
 
         .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 14px 20px; border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; width: 100%; font-family: inherit;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            background: var(--surface);
-            color: var(--text);
-            border: 1.5px solid var(--border);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-small {
-            padding: 8px 12px;
-            font-size: 13px;
-            width: auto;
-        }
-
-        .btn-icon {
-            padding: 10px;
-            width: auto;
-            border-radius: 8px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+        .btn-small { padding: 8px 12px; font-size: 13px; width: auto; }
+        .btn-icon { padding: 10px; width: auto; border-radius: 8px; }
+        .btn-group { display: flex; gap: 12px; margin-top: 16px; }
 
         .caja-item {
-            background: var(--bg);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
+            background: var(--bg); padding: 12px; border-radius: 8px;
+            margin-bottom: 12px; border: 1px solid var(--border);
         }
+        .caja-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .caja-title { font-weight: 600; color: var(--text); font-size: 14px; }
 
-        .caja-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
-        .caja-title {
-            font-weight: 600;
-            color: var(--text);
-            font-size: 14px;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-
-        .conditional-section {
-            display: none;
-            animation: slideDown 0.3s;
-        }
-
-        .conditional-section.active {
-            display: block;
-        }
+        .conditional-section { display: none; }
+        .conditional-section.active { display: block; animation: slideDown 0.3s; }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-                overflow: hidden;
-            }
-            to {
-                opacity: 1;
-                max-height: 2000px;
-            }
+            from { opacity: 0; max-height: 0; overflow: hidden; }
+            to { opacity: 1; max-height: 3000px; }
         }
 
         .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 14px;
-            animation: slideDown 0.3s;
+            padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 14px; animation: slideDown 0.3s;
         }
+        .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 
-        .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #6ee7b7;
-        }
+        .loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 20px; color: var(--text-secondary); }
+        .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--surface); }
+        th { background: var(--bg); padding: 12px; text-align: left; font-weight: 600; color: var(--text); border-bottom: 2px solid var(--border); position: sticky; top: 0; white-space: nowrap; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
 
-        .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #93c5fd;
-        }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
 
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 20px;
-            color: var(--text-secondary);
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .stat-card { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 16px; border-radius: 12px; text-align: center; }
+        .stat-card h4 { font-size: 12px; opacity: 0.9; margin-bottom: 8px; font-weight: 500; }
+        .stat-card p { font-size: 28px; font-weight: 700; }
 
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        .filters-section { background: var(--surface); padding: 16px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
 
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin: 0 -16px;
-            padding: 0 16px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            background: var(--surface);
-        }
-
-        th {
-            background: var(--bg);
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-            position: sticky;
-            top: 0;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .badge-success {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge-danger {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-warning {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-info {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-card h4 {
-            font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .stat-card p {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-
-        .search-box {
-            margin-bottom: 16px;
-        }
-
-        .search-box input {
-            padding-left: 40px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z' clip-rule='evenodd'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 12px center;
-        }
-
-        /* Filtros */
-        .filters-section {
-            background: var(--surface);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-        }
-
-        /* Gráficos */
-        .chart-container {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .chart-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--text);
-        }
-
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-        }
+        .chart-container { background: var(--surface); padding: 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+        .chart-wrapper { position: relative; height: 300px; }
 
         @media (max-width: 640px) {
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+            .filters-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -540,18 +268,20 @@
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="showTab('nueva')">➕ Nueva</button>
-        <button class="tab" onclick="showTab('historial')">📊 Historial</button>
-        <button class="tab" onclick="showTab('estadisticas')">📈 Estadísticas</button>
+        <button class="tab active" onclick="showTab('nueva', this)">➕ Nueva</button>
+        <button class="tab" onclick="showTab('historial', this)">📊 Historial</button>
+        <button class="tab" onclick="showTab('estadisticas', this)">📈 Estadísticas</button>
     </div>
 
     <div class="container">
         <div class="content">
-            <!-- TAB: NUEVA INSPECCIÓN -->
+
+            <!-- ============================== TAB: NUEVA ============================== -->
             <div id="tab-nueva" class="tab-content active">
                 <div id="alertContainer"></div>
                 
                 <form id="formInspeccion">
+
                     <!-- INFORMACIÓN GENERAL -->
                     <div class="section-card">
                         <div class="section-title">📅 Información General</div>
@@ -570,9 +300,10 @@
                             </select>
                         </div>
 
+                        <!-- INSPECTOR -->
                         <div class="form-group">
                             <label class="required">Inspector</label>
-                            <select id="inspector" required>
+                            <select id="inspector" required onchange="toggleOtros('inspector')">
                                 <option value="">Seleccionar...</option>
                                 <option value="Miriam Reyes">Miriam Reyes</option>
                                 <option value="Marina Herran">Marina Herran</option>
@@ -587,17 +318,26 @@
                                 <option value="Julio Gutierrez">Julio Guitierrez</option>
                                 <option value="Otros">Otros</option>
                             </select>
+                            <div id="otros-inspector" class="otros-container">
+                                <label>✏️ Escribe el nombre del inspector:</label>
+                                <input type="text" id="inspector-manual" placeholder="Nombre completo">
+                            </div>
                         </div>
 
+                        <!-- COORDINADOR CALIDAD -->
                         <div class="form-group">
                             <label class="required">Coordinador Calidad de Turno</label>
-                            <select id="coordinadorCalidad" required>
+                            <select id="coordinadorCalidad" required onchange="toggleOtros('coordinadorCalidad')">
                                 <option value="">Seleccionar...</option>
                                 <option value="Axel Falcon">Axel Falcon</option>
                                 <option value="Luis Vargas">Luis Vargas</option>
                                 <option value="Katherin Rafael">Katherin Rafael</option>
                                 <option value="Otros">Otros</option>
                             </select>
+                            <div id="otros-coordinadorCalidad" class="otros-container">
+                                <label>✏️ Escribe el nombre del coordinador:</label>
+                                <input type="text" id="coordinadorCalidad-manual" placeholder="Nombre completo">
+                            </div>
                         </div>
                     </div>
 
@@ -610,14 +350,20 @@
                             <input type="text" id="numMaquina" required placeholder="Ej: I-35, S-10">
                         </div>
 
+                        <!-- COORDINADOR PRODUCCIÓN -->
                         <div class="form-group">
                             <label class="required">Coordinador Producción de Turno</label>
-                            <select id="coordinadorProduccion" required>
+                            <select id="coordinadorProduccion" required onchange="toggleOtros('coordinadorProduccion')">
                                 <option value="">Seleccionar...</option>
                                 <option value="Victor Puse">Victor Puse</option>
                                 <option value="Reyna Quiro">Reyna Quiro</option>
-                                <option value="Luis Vargas">Luis Vargas</option>
+                                <option value="Wuendy Garcia">Wuendy Garcia</option>
+                                <option value="Otros">Otros</option>
                             </select>
+                            <div id="otros-coordinadorProduccion" class="otros-container">
+                                <label>✏️ Escribe el nombre del coordinador:</label>
+                                <input type="text" id="coordinadorProduccion-manual" placeholder="Nombre completo">
+                            </div>
                         </div>
 
                         <div class="grid-2">
@@ -625,7 +371,6 @@
                                 <label class="required">Orden de Producción</label>
                                 <input type="text" id="ordenProduccion" required placeholder="Número de orden">
                             </div>
-
                             <div class="form-group">
                                 <label class="required">Cantidad a Producir</label>
                                 <input type="number" id="cantidadProducir" required placeholder="Cantidad">
@@ -641,13 +386,11 @@
                     <!-- OPERARIOS -->
                     <div class="section-card">
                         <div class="section-title">👥 Operarios</div>
-                        
                         <div class="grid-2">
                             <div class="form-group">
                                 <label>Operario 1</label>
                                 <input type="text" id="operario1" placeholder="Nombre o código">
                             </div>
-
                             <div class="form-group">
                                 <label>Turno</label>
                                 <select id="turnoOperario1">
@@ -657,13 +400,11 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="grid-2">
                             <div class="form-group">
                                 <label>Operario 2</label>
                                 <input type="text" id="operario2" placeholder="Nombre o código">
                             </div>
-
                             <div class="form-group">
                                 <label>Turno</label>
                                 <select id="turnoOperario2">
@@ -675,22 +416,19 @@
                         </div>
                     </div>
 
-                    <!-- CAJAS INSPECCIONADAS -->
+                    <!-- CAJAS ENCONTRADAS EN PRODUCCIÓN -->
                     <div class="section-card">
                         <div class="section-title">📦 Cajas Encontradas en Produccion</div>
                         
-                        <!-- Cajas Completas -->
                         <div class="grid-3">
                             <div class="form-group">
                                 <label># Cajas Completas</label>
                                 <input type="number" id="cajasCompletas" placeholder="0" oninput="calcularTotal()">
                             </div>
-
                             <div class="form-group">
                                 <label>Unidades x Caja</label>
                                 <input type="number" id="unidadesCajaCompleta" placeholder="0" oninput="calcularTotal()">
                             </div>
-
                             <div class="form-group">
                                 <label>Subtotal</label>
                                 <input type="number" id="subtotalCompletas" placeholder="0" readonly>
@@ -702,7 +440,6 @@
                                 <label>Fecha Producción</label>
                                 <input type="date" id="fechaCajasCompletas">
                             </div>
-
                             <div class="form-group">
                                 <label>Turno</label>
                                 <select id="turnoCajasCompletas">
@@ -715,26 +452,23 @@
 
                         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
 
-                        <!-- Cajas Saldo Dinámicas -->
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <div style="font-weight: 600; color: var(--text);">Cajas Saldo</div>
                             <button type="button" class="btn btn-outline btn-small" onclick="agregarCajaSaldo()" id="btnAgregarCaja">
                                 ➕ Agregar Caja
                             </button>
                         </div>
-
                         <div id="cajasSaldoContainer"></div>
 
                         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
 
-                        <!-- Total -->
                         <div class="form-group">
                             <label style="font-size: 16px; font-weight: 600;">Total Unidades Inspeccionadas</label>
                             <input type="number" id="totalUnidades" placeholder="0" readonly style="font-size: 18px; font-weight: 600; background: var(--bg);">
                         </div>
                     </div>
 
-                    <!-- DATOS DE INSPECCIÓN -->
+                    <!-- CAJAS INSPECCIONADAS -->
                     <div class="section-card">
                         <div class="section-title">🔍 Cajas Inspeccionadas</div>
                         
@@ -742,12 +476,10 @@
                             <label class="required"># Cajas Muestreadas</label>
                             <input type="number" id="cajasMuestreadas" required placeholder="0">
                         </div>
-
                         <div class="form-group">
                             <label class="required"># Unidades Muestreadas</label>
                             <input type="number" id="unidadesMuestreadas" required placeholder="0" oninput="calcularPorcentajeHallado()">
                         </div>
-
                         <div class="form-group">
                             <label># Unidades Defectuosas</label>
                             <div style="display: flex; align-items: center; gap: 12px;">
@@ -760,7 +492,6 @@
                     <!-- RESULTADO -->
                     <div class="section-card">
                         <div class="section-title">✅ Resultado de Inspección</div>
-                        
                         <div class="form-group">
                             <label class="required">Resultado</label>
                             <select id="resultado" required onchange="toggleCondicional()">
@@ -771,9 +502,8 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN CONDICIONAL NO CONFORME -->
+                    <!-- SECCIÓN CONDICIONAL: NO CONFORME -->
                     <div id="seccionNoConforme" class="conditional-section">
-                        <!-- DEFECTOS -->
                         <div class="section-card">
                             <div class="section-title">⚠️ Detalles del Defecto</div>
                             
@@ -801,13 +531,38 @@
                                     <option value="TARJETA ROJA">TARJETA ROJA</option>
                                 </select>
                             </div>
+
+                            <!-- FOTO DEL DEFECTO -->
+                            <div class="form-group" style="margin-top: 8px;">
+                                <label>📸 Foto del Defecto <span style="color: var(--text-secondary); font-weight: 400;">(opcional)</span></label>
+                                <div id="fotoContainer"
+                                     style="border: 2px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg);"
+                                     onclick="document.getElementById('inputFoto').click()"
+                                     ondragover="event.preventDefault(); this.style.borderColor='var(--primary)'"
+                                     ondragleave="this.style.borderColor='var(--border)'"
+                                     ondrop="manejarDrop(event)">
+                                    <div id="fotoPlaceholder">
+                                        <div style="font-size: 40px; margin-bottom: 8px;">📷</div>
+                                        <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Tomar o subir foto</div>
+                                        <div style="font-size: 13px; color: var(--text-secondary);">Toca para usar la cámara o seleccionar imagen</div>
+                                    </div>
+                                    <img id="previewFoto" src="" alt="Preview" style="display: none; max-width: 100%; max-height: 250px; border-radius: 8px; object-fit: cover;">
+                                </div>
+                                <input type="file" id="inputFoto" accept="image/*" capture="environment" style="display: none;" onchange="previsualizarFoto(event)">
+                                <div id="fotoBotones" style="display: none; margin-top: 12px;">
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" class="btn btn-outline btn-small" onclick="document.getElementById('inputFoto').click()" style="flex: 1;">🔄 Cambiar foto</button>
+                                        <button type="button" class="btn btn-secondary btn-small" onclick="eliminarFoto()" style="flex: 1; color: var(--danger); border-color: var(--danger);">🗑️ Eliminar</button>
+                                    </div>
+                                </div>
+                                <div id="fotoInfo" style="display: none; margin-top: 8px; font-size: 13px; color: var(--text-secondary); text-align: center;"></div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- OBSERVACIONES -->
                     <div class="section-card">
                         <div class="section-title">📝 Observaciones</div>
-                        
                         <div class="form-group">
                             <label>Observaciones Generales</label>
                             <textarea id="observaciones" placeholder="Cualquier información adicional relevante..."></textarea>
@@ -815,45 +570,33 @@
                     </div>
 
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">
-                            💾 Guardar Inspección
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
-                            🔄 Limpiar
-                        </button>
+                        <button type="submit" class="btn btn-primary">💾 Guardar Inspección</button>
+                        <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">🔄 Limpiar</button>
                     </div>
                 </form>
             </div>
 
-            <!-- TAB: HISTORIAL -->
+            <!-- ============================== TAB: HISTORIAL ============================== -->
             <div id="tab-historial" class="tab-content">
-                <!-- FILTROS -->
                 <div class="filters-section">
                     <div class="section-title">🔍 Filtros</div>
-                    
                     <div class="filters-grid">
                         <div class="form-group">
                             <label>Desde</label>
                             <input type="date" id="filtroFechaDesde">
                         </div>
-
                         <div class="form-group">
                             <label>Hasta</label>
                             <input type="date" id="filtroFechaHasta">
                         </div>
-
                         <div class="form-group">
                             <label>Inspector</label>
-                            <select id="filtroInspector">
-                                <option value="">Todos</option>
-                            </select>
+                            <select id="filtroInspector"><option value="">Todos</option></select>
                         </div>
-
                         <div class="form-group">
                             <label>Máquina</label>
                             <input type="text" id="filtroMaquina" placeholder="Ej: I-35">
                         </div>
-
                         <div class="form-group">
                             <label>Turno</label>
                             <select id="filtroTurno">
@@ -862,7 +605,6 @@
                                 <option value="NOCHE">NOCHE</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label>Resultado</label>
                             <select id="filtroResultado">
@@ -872,7 +614,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="btn-group" style="margin-top: 12px;">
                         <button class="btn btn-primary" onclick="aplicarFiltros()">🔍 Aplicar Filtros</button>
                         <button class="btn btn-secondary" onclick="limpiarFiltros()">🔄 Limpiar</button>
@@ -880,9 +621,8 @@
                 </div>
 
                 <div class="btn-group" style="margin-bottom: 16px;">
-                    <button class="btn btn-success" onclick="exportarExcel()">
-                        📥 Exportar Excel
-                    </button>
+                    <button class="btn btn-primary" onclick="cargarHistorial()">🔄 Actualizar Datos</button>
+                    <button class="btn btn-success" onclick="exportarExcel()">📥 Exportar Excel</button>
                 </div>
 
                 <div id="loadingHistorial" class="loading" style="display: none;">
@@ -909,156 +649,145 @@
 
                 <div id="emptyState" class="empty-state" style="display: none;">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                     <h3>No hay inspecciones registradas</h3>
                     <p>Las inspecciones aparecerán aquí una vez que guardes tu primera inspección</p>
                 </div>
             </div>
 
-            <!-- TAB: ESTADÍSTICAS -->
+            <!-- ============================== TAB: ESTADÍSTICAS ============================== -->
             <div id="tab-estadisticas" class="tab-content">
                 <div class="stats-grid" id="statsContainer"></div>
-                
-                <!-- Gráfico Circular: % Inspecciones por Inspector -->
                 <div class="chart-container">
                     <div class="chart-title">👤 Distribución de Inspecciones por Inspector</div>
-                    <div class="chart-wrapper">
-                        <canvas id="chartInspectorPie"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="chartInspectorPie"></canvas></div>
                 </div>
-
-                <!-- Gráfico de Barras: Inspecciones por Inspector -->
                 <div class="chart-container">
                     <div class="chart-title">👥 Inspecciones por Inspector</div>
-                    <div class="chart-wrapper">
-                        <canvas id="chartInspectorBar"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="chartInspectorBar"></canvas></div>
                 </div>
-
-                <!-- Gráfico Circular: Conformes vs No Conformes -->
                 <div class="chart-container">
                     <div class="chart-title">✅ Conformes vs No Conformes</div>
-                    <div class="chart-wrapper">
-                        <canvas id="chartResultados"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="chartResultados"></canvas></div>
                 </div>
-
-                <!-- Gráfico de Barras: No Conformes por Máquina -->
                 <div class="chart-container">
                     <div class="chart-title">🏭 No Conformes por Máquina</div>
-                    <div class="chart-wrapper">
-                        <canvas id="chartMaquinas"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="chartMaquinas"></canvas></div>
                 </div>
-
-                <!-- Gráfico de Barras: Inspecciones por Turno -->
                 <div class="chart-container">
                     <div class="chart-title">🌙 Inspecciones por Turno</div>
-                    <div class="chart-wrapper">
-                        <canvas id="chartTurnos"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="chartTurnos"></canvas></div>
                 </div>
-
-                <!-- Gráfico Circular: Tipos de Defecto -->
                 <div class="chart-container">
                     <div class="chart-title">⚠️ Distribución de Tipos de Defecto</div>
-                    <div class="chart-wrapper">
-                        <canvas id="chartDefectos"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="chartDefectos"></canvas></div>
                 </div>
-
-                <!-- Gráfico de Línea: Tendencia por Mes -->
                 <div class="chart-container">
                     <div class="chart-title">📈 Tendencia de Conformidad por Mes</div>
-                    <div class="chart-wrapper">
-                        <canvas id="chartTendencia"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="chartTendencia"></canvas></div>
                 </div>
-
-                <!-- Tabla Ranking -->
                 <div class="section-card">
                     <div class="section-title">🏆 Ranking: Máquinas con Más No Conformes</div>
                     <div id="rankingMaquinas"></div>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        // URL de Google Apps Script
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqU__GMRO4Z7vOsGI908ymhVbse6djur9DyglF3-CfI7FpVl11JUJEW_sHAqDreZNo/exec';
-        
-        // Variables globales
+
         let cajasSaldoCount = 0;
         let inspecciones = [];
         let inspeccionesFiltradas = [];
         let charts = {};
+        let fotoBase64 = null;
 
-        // Configurar fecha actual
         document.getElementById('fechaInspeccion').valueAsDate = new Date();
 
-        // Calcular porcentaje hallado en tiempo real
+        // ============================================================
+        // CAMPO "OTROS" — muestra input manual debajo del select
+        // Guarda el nombre escrito, NO la palabra "Otros" en Sheets
+        // ============================================================
+        function toggleOtros(campo) {
+            const select = document.getElementById(campo);
+            const contenedor = document.getElementById('otros-' + campo);
+            const inputManual = document.getElementById(campo + '-manual');
+
+            if (select.value === 'Otros') {
+                contenedor.classList.add('visible');
+                inputManual.required = true;
+                inputManual.focus();
+            } else {
+                contenedor.classList.remove('visible');
+                inputManual.required = false;
+                inputManual.value = '';
+            }
+        }
+
+        // Obtiene el valor final: si es "Otros" devuelve lo escrito manualmente
+        function getValor(campo) {
+            const select = document.getElementById(campo);
+            if (select.value === 'Otros') {
+                const manual = document.getElementById(campo + '-manual');
+                return manual.value.trim() || '';
+            }
+            return select.value;
+        }
+
+        // ============================================================
+        // INDICADOR % HALLADO EN TIEMPO REAL
+        // ============================================================
         function calcularPorcentajeHallado() {
             const muestreadas = parseFloat(document.getElementById('unidadesMuestreadas').value) || 0;
             const defectuosas = parseFloat(document.getElementById('unidadesDefectuosas').value) || 0;
             const indicador = document.getElementById('indicadorPorcentaje');
             
             if (defectuosas > 0 && muestreadas > 0) {
-                const porcentaje = (defectuosas / muestreadas) * 100;
-                
-                // Mostrar indicador
+                const pct = (defectuosas / muestreadas) * 100;
                 indicador.style.display = 'block';
-                
-                // Cambiar color según el porcentaje
-                if (porcentaje < 2) {
+                if (pct < 2) {
                     indicador.style.background = '#10b981';
-                    indicador.style.color = 'white';
-                    indicador.textContent = `🟢 ${porcentaje.toFixed(2)}% HALLADO`;
-                } else if (porcentaje >= 2 && porcentaje <= 5) {
+                    indicador.textContent = `🟢 ${pct.toFixed(2)}% HALLADO`;
+                } else if (pct <= 5) {
                     indicador.style.background = '#f59e0b';
-                    indicador.style.color = 'white';
-                    indicador.textContent = `🟡 ${porcentaje.toFixed(2)}% HALLADO`;
+                    indicador.textContent = `🟡 ${pct.toFixed(2)}% HALLADO`;
                 } else {
                     indicador.style.background = '#ef4444';
-                    indicador.style.color = 'white';
-                    indicador.textContent = `🔴 ${porcentaje.toFixed(2)}% HALLADO`;
+                    indicador.textContent = `🔴 ${pct.toFixed(2)}% HALLADO`;
                 }
+                indicador.style.color = 'white';
             } else {
                 indicador.style.display = 'none';
             }
         }
 
-        // Calcular total de unidades
+        // ============================================================
+        // CALCULAR TOTAL DE UNIDADES
+        // ============================================================
         function calcularTotal() {
             let total = 0;
-            
-            // Cajas completas
-            const cajasCompletas = parseFloat(document.getElementById('cajasCompletas').value) || 0;
-            const unidadesCaja = parseFloat(document.getElementById('unidadesCajaCompleta').value) || 0;
-            const subtotal = cajasCompletas * unidadesCaja;
-            document.getElementById('subtotalCompletas').value = subtotal;
-            total += subtotal;
-            
-            // Cajas saldo
+            const cc = parseFloat(document.getElementById('cajasCompletas').value) || 0;
+            const uc = parseFloat(document.getElementById('unidadesCajaCompleta').value) || 0;
+            const sub = cc * uc;
+            document.getElementById('subtotalCompletas').value = sub;
+            total += sub;
             for (let i = 1; i <= 5; i++) {
-                const cajasInput = document.getElementById(`cajasSaldo${i}`);
-                const unidadesInput = document.getElementById(`unidadesCaja${i}`);
-                if (cajasInput && unidadesInput) {
-                    const cajas = parseFloat(cajasInput.value) || 0;
-                    const unidades = parseFloat(unidadesInput.value) || 0;
-                    total += cajas * unidades;
-                }
+                const ci = document.getElementById(`cajasSaldo${i}`);
+                const ui = document.getElementById(`unidadesCaja${i}`);
+                if (ci && ui) total += (parseFloat(ci.value) || 0) * (parseFloat(ui.value) || 0);
             }
-            
             document.getElementById('totalUnidades').value = total;
         }
 
-        // Toggle condicional NO CONFORME
+        // ============================================================
+        // TOGGLE SECCIÓN NO CONFORME
+        // ============================================================
         function toggleCondicional() {
             const resultado = document.getElementById('resultado').value;
             const seccion = document.getElementById('seccionNoConforme');
-            
             if (resultado === 'NO CONFORME') {
                 seccion.classList.add('active');
                 document.getElementById('tipoDefecto').required = true;
@@ -1070,152 +799,187 @@
                 document.getElementById('tipoDefecto').value = '';
                 document.getElementById('problema').value = '';
                 document.getElementById('tipoTarjeta').value = '';
+                eliminarFoto();
             }
         }
 
-        // Agregar caja saldo
+        // ============================================================
+        // CAJAS SALDO
+        // ============================================================
         function agregarCajaSaldo() {
-            if (cajasSaldoCount >= 5) {
-                mostrarAlerta('No puedes agregar más de 5 cajas saldo', 'error');
-                return;
-            }
-            
+            if (cajasSaldoCount >= 5) { mostrarAlerta('No puedes agregar más de 5 cajas saldo', 'error'); return; }
             cajasSaldoCount++;
+            const n = cajasSaldoCount;
             const container = document.getElementById('cajasSaldoContainer');
-            
-            const cajaDiv = document.createElement('div');
-            cajaDiv.className = 'caja-item';
-            cajaDiv.id = `caja-saldo-${cajasSaldoCount}`;
-            cajaDiv.innerHTML = `
+            const div = document.createElement('div');
+            div.className = 'caja-item';
+            div.id = `caja-saldo-${n}`;
+            div.innerHTML = `
                 <div class="caja-header">
-                    <span class="caja-title">Caja Saldo ${cajasSaldoCount}</span>
-                    <button type="button" class="btn btn-secondary btn-icon" onclick="eliminarCajaSaldo(${cajasSaldoCount})">
-                        🗑️
-                    </button>
+                    <span class="caja-title">Caja Saldo ${n}</span>
+                    <button type="button" class="btn btn-secondary btn-icon" onclick="eliminarCajaSaldo(${n})">🗑️</button>
                 </div>
-                
                 <div class="grid-3">
-                    <div class="form-group">
-                        <label># Cajas</label>
-                        <input type="number" id="cajasSaldo${cajasSaldoCount}" placeholder="0" oninput="calcularTotal()">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Unidades x Caja</label>
-                        <input type="number" id="unidadesCaja${cajasSaldoCount}" placeholder="0" oninput="calcularTotal()">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Subtotal</label>
-                        <input type="number" id="subtotalSaldo${cajasSaldoCount}" placeholder="0" readonly>
-                    </div>
+                    <div class="form-group"><label># Cajas</label><input type="number" id="cajasSaldo${n}" placeholder="0" oninput="calcularTotal()"></div>
+                    <div class="form-group"><label>Unidades x Caja</label><input type="number" id="unidadesCaja${n}" placeholder="0" oninput="calcularTotal()"></div>
+                    <div class="form-group"><label>Subtotal</label><input type="number" id="subtotalSaldo${n}" placeholder="0" readonly></div>
                 </div>
-                
                 <div class="grid-2">
-                    <div class="form-group">
-                        <label>Fecha Producción</label>
-                        <input type="date" id="fechaSaldo${cajasSaldoCount}">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Turno</label>
-                        <select id="turnoSaldo${cajasSaldoCount}">
+                    <div class="form-group"><label>Fecha Producción</label><input type="date" id="fechaSaldo${n}"></div>
+                    <div class="form-group"><label>Turno</label>
+                        <select id="turnoSaldo${n}">
                             <option value="">Seleccionar...</option>
                             <option value="DIA">DÍA</option>
                             <option value="NOCHE">NOCHE</option>
                         </select>
                     </div>
-                </div>
-            `;
-            
-            container.appendChild(cajaDiv);
-            
-            // Actualizar subtotales
-            document.getElementById(`cajasSaldo${cajasSaldoCount}`).addEventListener('input', function() {
-                const cajas = parseFloat(this.value) || 0;
-                const unidades = parseFloat(document.getElementById(`unidadesCaja${cajasSaldoCount}`).value) || 0;
-                document.getElementById(`subtotalSaldo${cajasSaldoCount}`).value = cajas * unidades;
+                </div>`;
+            container.appendChild(div);
+
+            document.getElementById(`cajasSaldo${n}`).addEventListener('input', function() {
+                const c = parseFloat(this.value) || 0;
+                const u = parseFloat(document.getElementById(`unidadesCaja${n}`).value) || 0;
+                document.getElementById(`subtotalSaldo${n}`).value = c * u;
                 calcularTotal();
             });
-            
-            document.getElementById(`unidadesCaja${cajasSaldoCount}`).addEventListener('input', function() {
-                const cajas = parseFloat(document.getElementById(`cajasSaldo${cajasSaldoCount}`).value) || 0;
-                const unidades = parseFloat(this.value) || 0;
-                document.getElementById(`subtotalSaldo${cajasSaldoCount}`).value = cajas * unidades;
+            document.getElementById(`unidadesCaja${n}`).addEventListener('input', function() {
+                const c = parseFloat(document.getElementById(`cajasSaldo${n}`).value) || 0;
+                const u = parseFloat(this.value) || 0;
+                document.getElementById(`subtotalSaldo${n}`).value = c * u;
                 calcularTotal();
             });
-            
+
             if (cajasSaldoCount >= 5) {
                 document.getElementById('btnAgregarCaja').disabled = true;
                 document.getElementById('btnAgregarCaja').style.opacity = '0.5';
             }
         }
 
-        // Eliminar caja saldo
         function eliminarCajaSaldo(numero) {
-            const caja = document.getElementById(`caja-saldo-${numero}`);
-            if (caja) {
-                caja.remove();
-                cajasSaldoCount--;
-                document.getElementById('btnAgregarCaja').disabled = false;
-                document.getElementById('btnAgregarCaja').style.opacity = '1';
-                calcularTotal();
+            const el = document.getElementById(`caja-saldo-${numero}`);
+            if (el) { el.remove(); cajasSaldoCount--; }
+            document.getElementById('btnAgregarCaja').disabled = false;
+            document.getElementById('btnAgregarCaja').style.opacity = '1';
+            calcularTotal();
+        }
+
+        // ============================================================
+        // FOTO
+        // ============================================================
+        function previsualizarFoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { mostrarAlerta('⚠️ Imagen muy grande. Máximo 5MB.', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                fotoBase64 = e.target.result;
+                document.getElementById('previewFoto').src = fotoBase64;
+                document.getElementById('previewFoto').style.display = 'block';
+                document.getElementById('fotoPlaceholder').style.display = 'none';
+                document.getElementById('fotoBotones').style.display = 'block';
+                document.getElementById('fotoContainer').style.borderColor = 'var(--success)';
+                document.getElementById('fotoContainer').style.background = '#f0fdf4';
+                document.getElementById('fotoContainer').onclick = null;
+                const sizeKB = (file.size / 1024).toFixed(1);
+                document.getElementById('fotoInfo').style.display = 'block';
+                document.getElementById('fotoInfo').innerHTML = `✅ <strong>${file.name}</strong> (${sizeKB} KB)`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function eliminarFoto() {
+            fotoBase64 = null;
+            const prev = document.getElementById('previewFoto');
+            if (prev) { prev.style.display = 'none'; prev.src = ''; }
+            const ph = document.getElementById('fotoPlaceholder');
+            if (ph) ph.style.display = 'block';
+            const bot = document.getElementById('fotoBotones');
+            if (bot) bot.style.display = 'none';
+            const info = document.getElementById('fotoInfo');
+            if (info) info.style.display = 'none';
+            const input = document.getElementById('inputFoto');
+            if (input) input.value = '';
+            const cont = document.getElementById('fotoContainer');
+            if (cont) {
+                cont.style.borderColor = 'var(--border)';
+                cont.style.background = 'var(--bg)';
+                cont.onclick = () => document.getElementById('inputFoto').click();
             }
         }
 
-        // Mostrar alerta
+        function manejarDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const input = document.getElementById('inputFoto');
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+                previsualizarFoto({ target: input });
+            }
+            document.getElementById('fotoContainer').style.borderColor = 'var(--border)';
+        }
+
+        // ============================================================
+        // ALERTAS
+        // ============================================================
         function mostrarAlerta(mensaje, tipo = 'success') {
             const container = document.getElementById('alertContainer');
             const alert = document.createElement('div');
             alert.className = `alert alert-${tipo}`;
-            alert.innerHTML = `
-                <span>${tipo === 'success' ? '✅' : tipo === 'error' ? '❌' : 'ℹ️'}</span>
-                <span>${mensaje}</span>
-            `;
+            alert.innerHTML = `<span>${tipo === 'success' ? '✅' : tipo === 'error' ? '❌' : 'ℹ️'}</span><span>${mensaje}</span>`;
             container.innerHTML = '';
             container.appendChild(alert);
-            
-            setTimeout(() => {
-                alert.remove();
-            }, 5000);
-            
+            setTimeout(() => alert.remove(), 5000);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Guardar inspección
+        // ============================================================
+        // GUARDAR INSPECCIÓN
+        // ============================================================
         document.getElementById('formInspeccion').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const btnGuardar = document.querySelector('button[type="submit"]');
-            const textoOriginal = btnGuardar.innerHTML;
-            btnGuardar.innerHTML = '<div class="spinner"></div> Guardando...';
-            btnGuardar.disabled = true;
-            
+
+            // Validar campos "Otros"
+            const camposOtros = [
+                { id: 'inspector', label: 'Inspector' },
+                { id: 'coordinadorCalidad', label: 'Coordinador Calidad' },
+                { id: 'coordinadorProduccion', label: 'Coordinador Producción' }
+            ];
+            for (const c of camposOtros) {
+                if (document.getElementById(c.id).value === 'Otros') {
+                    const manual = document.getElementById(c.id + '-manual');
+                    if (!manual.value.trim()) {
+                        mostrarAlerta(`⚠️ Por favor escribe el nombre en "${c.label}"`, 'error');
+                        manual.focus();
+                        return;
+                    }
+                }
+            }
+
+            const btn = document.querySelector('button[type="submit"]');
+            const textoOrig = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner"></div> Guardando...';
+            btn.disabled = true;
+
             try {
                 const cajasSaldo = {};
                 for (let i = 1; i <= 5; i++) {
-                    const inputCajas = document.getElementById(`cajasSaldo${i}`);
-                    const inputUnidades = document.getElementById(`unidadesCaja${i}`);
-                    if (inputCajas && inputCajas.value) {
-                        cajasSaldo[`cajasSaldo${i}`] = inputCajas.value;
-                        cajasSaldo[`unidadesCaja${i}`] = inputUnidades ? inputUnidades.value : '';
-                        cajasSaldo[`fechaSaldo${i}`] = document.getElementById(`fechaSaldo${i}`).value;
-                        cajasSaldo[`turnoSaldo${i}`] = document.getElementById(`turnoSaldo${i}`).value;
-                    } else {
-                        cajasSaldo[`cajasSaldo${i}`] = '';
-                        cajasSaldo[`unidadesCaja${i}`] = '';
-                        cajasSaldo[`fechaSaldo${i}`] = '';
-                        cajasSaldo[`turnoSaldo${i}`] = '';
-                    }
+                    const ic = document.getElementById(`cajasSaldo${i}`);
+                    const iu = document.getElementById(`unidadesCaja${i}`);
+                    cajasSaldo[`cajasSaldo${i}`] = ic?.value || '';
+                    cajasSaldo[`unidadesCaja${i}`] = iu?.value || '';
+                    cajasSaldo[`fechaSaldo${i}`] = document.getElementById(`fechaSaldo${i}`)?.value || '';
+                    cajasSaldo[`turnoSaldo${i}`] = document.getElementById(`turnoSaldo${i}`)?.value || '';
                 }
 
                 const inspeccion = {
                     fechaInspeccion: document.getElementById('fechaInspeccion').value,
                     turnoInspeccion: document.getElementById('turnoInspeccion').value,
-                    inspector: document.getElementById('inspector').value,
-                    coordinadorCalidad: document.getElementById('coordinadorCalidad').value,
+                    inspector: getValor('inspector'),                     // Col E
+                    coordinadorCalidad: getValor('coordinadorCalidad'),   // Col F
                     numMaquina: document.getElementById('numMaquina').value,
-                    coordinadorProduccion: document.getElementById('coordinadorProduccion').value,
+                    coordinadorProduccion: getValor('coordinadorProduccion'),
                     ordenProduccion: document.getElementById('ordenProduccion').value,
                     cantidadProducir: document.getElementById('cantidadProducir').value,
                     producto: document.getElementById('producto').value,
@@ -1235,31 +999,32 @@
                     tipoDefecto: document.getElementById('tipoDefecto').value,
                     problema: document.getElementById('problema').value,
                     tipoTarjeta: document.getElementById('tipoTarjeta').value,
-                    observaciones: document.getElementById('observaciones').value
+                    observaciones: document.getElementById('observaciones').value,
+                    imagenBase64: fotoBase64 || ''
                 };
 
-                const response = await fetch(SCRIPT_URL, {
+                await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(inspeccion)
                 });
 
                 mostrarAlerta('✅ Inspección guardada exitosamente en Google Sheets', 'success');
                 limpiarFormulario();
-                
+
             } catch (error) {
                 console.error('Error:', error);
                 mostrarAlerta('❌ Error al guardar. Verifica tu conexión e intenta nuevamente.', 'error');
             } finally {
-                btnGuardar.innerHTML = textoOriginal;
-                btnGuardar.disabled = false;
+                btn.innerHTML = textoOrig;
+                btn.disabled = false;
             }
         });
 
-        // Limpiar formulario
+        // ============================================================
+        // LIMPIAR FORMULARIO
+        // ============================================================
         function limpiarFormulario() {
             document.getElementById('formInspeccion').reset();
             document.getElementById('fechaInspeccion').valueAsDate = new Date();
@@ -1269,54 +1034,50 @@
             document.getElementById('totalUnidades').value = '';
             document.getElementById('subtotalCompletas').value = '';
             document.getElementById('indicadorPorcentaje').style.display = 'none';
+            document.getElementById('btnAgregarCaja').disabled = false;
+            document.getElementById('btnAgregarCaja').style.opacity = '1';
+            // Limpiar campos Otros
+            ['inspector', 'coordinadorCalidad', 'coordinadorProduccion'].forEach(campo => {
+                const cont = document.getElementById('otros-' + campo);
+                if (cont) cont.classList.remove('visible');
+                const inp = document.getElementById(campo + '-manual');
+                if (inp) { inp.value = ''; inp.required = false; }
+            });
+            eliminarFoto();
         }
 
-        // Cambiar tab
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-
+        // ============================================================
+        // TABS
+        // ============================================================
+        function showTab(tabName, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
-            event.target.classList.add('active');
-
-            if (tabName === 'historial') {
-                cargarHistorial();
-            } else if (tabName === 'estadisticas') {
-                cargarEstadisticas();
-            }
+            el.classList.add('active');
+            if (tabName === 'historial') cargarHistorial();
+            else if (tabName === 'estadisticas') cargarEstadisticas();
         }
 
-        // Cargar historial
+        // ============================================================
+        // HISTORIAL
+        // ============================================================
         async function cargarHistorial() {
             const loading = document.getElementById('loadingHistorial');
             const tbody = document.getElementById('cuerpoTabla');
-            const emptyState = document.getElementById('emptyState');
-
             loading.style.display = 'flex';
             tbody.innerHTML = '';
-            emptyState.style.display = 'none';
-
+            document.getElementById('emptyState').style.display = 'none';
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
                 inspecciones = data;
                 inspeccionesFiltradas = data;
-
-                // Poblar filtros
                 poblarFiltros();
-
                 if (!inspecciones || inspecciones.length === 0) {
-                    emptyState.style.display = 'block';
-                    loading.style.display = 'none';
-                    return;
+                    document.getElementById('emptyState').style.display = 'block';
+                } else {
+                    mostrarTabla();
                 }
-
-                mostrarTabla();
-
             } catch (error) {
                 console.error('Error al cargar historial:', error);
                 mostrarAlerta('Error al cargar el historial. Verifica tu conexión.', 'error');
@@ -1325,62 +1086,34 @@
             }
         }
 
-        // Poblar filtros dinámicamente
         function poblarFiltros() {
-            const selectInspector = document.getElementById('filtroInspector');
+            const sel = document.getElementById('filtroInspector');
             const inspectores = [...new Set(inspecciones.map(i => i['Inspector']).filter(Boolean))];
-            
-            selectInspector.innerHTML = '<option value="">Todos</option>';
-            inspectores.forEach(insp => {
-                selectInspector.innerHTML += `<option value="${insp}">${insp}</option>`;
-            });
+            sel.innerHTML = '<option value="">Todos</option>';
+            inspectores.forEach(i => sel.innerHTML += `<option value="${i}">${i}</option>`);
         }
 
-        // Aplicar filtros
         function aplicarFiltros() {
-            const fechaDesde = document.getElementById('filtroFechaDesde').value;
-            const fechaHasta = document.getElementById('filtroFechaHasta').value;
+            const desde = document.getElementById('filtroFechaDesde').value;
+            const hasta = document.getElementById('filtroFechaHasta').value;
             const inspector = document.getElementById('filtroInspector').value;
             const maquina = document.getElementById('filtroMaquina').value.toUpperCase();
             const turno = document.getElementById('filtroTurno').value;
             const resultado = document.getElementById('filtroResultado').value;
 
             inspeccionesFiltradas = inspecciones.filter(insp => {
-                let cumple = true;
-
-                if (fechaDesde && insp['Fecha de inspeccion']) {
-                    const fecha = new Date(insp['Fecha de inspeccion']);
-                    cumple = cumple && fecha >= new Date(fechaDesde);
-                }
-
-                if (fechaHasta && insp['Fecha de inspeccion']) {
-                    const fecha = new Date(insp['Fecha de inspeccion']);
-                    cumple = cumple && fecha <= new Date(fechaHasta);
-                }
-
-                if (inspector) {
-                    cumple = cumple && insp['Inspector'] === inspector;
-                }
-
-                if (maquina) {
-                    cumple = cumple && insp['N° de Maquina'] && insp['N° de Maquina'].toUpperCase().includes(maquina);
-                }
-
-                if (turno) {
-                    cumple = cumple && insp['Turno de Inspeccion'] === turno;
-                }
-
-                if (resultado) {
-                    cumple = cumple && insp['Resultado'] === resultado;
-                }
-
-                return cumple;
+                let ok = true;
+                if (desde && insp['Fecha de inspeccion']) ok = ok && new Date(insp['Fecha de inspeccion']) >= new Date(desde);
+                if (hasta && insp['Fecha de inspeccion']) ok = ok && new Date(insp['Fecha de inspeccion']) <= new Date(hasta);
+                if (inspector) ok = ok && insp['Inspector'] === inspector;
+                if (maquina) ok = ok && insp['N° de Maquina'] && insp['N° de Maquina'].toUpperCase().includes(maquina);
+                if (turno) ok = ok && insp['Turno de Inspeccion'] === turno;
+                if (resultado) ok = ok && insp['Resultado'] === resultado;
+                return ok;
             });
-
             mostrarTabla();
         }
 
-        // Limpiar filtros
         function limpiarFiltros() {
             document.getElementById('filtroFechaDesde').value = '';
             document.getElementById('filtroFechaHasta').value = '';
@@ -1388,114 +1121,70 @@
             document.getElementById('filtroMaquina').value = '';
             document.getElementById('filtroTurno').value = '';
             document.getElementById('filtroResultado').value = '';
-            
             inspeccionesFiltradas = inspecciones;
             mostrarTabla();
         }
 
-        // Mostrar tabla
         function mostrarTabla() {
             const tbody = document.getElementById('cuerpoTabla');
             const emptyState = document.getElementById('emptyState');
-
             if (inspeccionesFiltradas.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
             }
-
             emptyState.style.display = 'none';
-            
-            tbody.innerHTML = inspeccionesFiltradas.map(insp => {
-                const porcentajeHallado = insp['% Hallado'] ? (parseFloat(insp['% Hallado']) * 100).toFixed(2) + '%' : 'N/A';
-                
-                return `
-                    <tr>
-                        <td>${formatearFecha(insp['Fecha de inspeccion'])}</td>
-                        <td><span class="badge badge-info">${insp['Turno de Inspeccion']}</span></td>
-                        <td><strong>${insp['N° de Maquina']}</strong></td>
-                        <td>${insp['Producto']}</td>
-                        <td><strong>${porcentajeHallado}</strong></td>
-                        <td>
-                            <span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">
-                                ${insp['Resultado']}
-                            </span>
-                        </td>
-                        <td>${insp['Inspector']}</td>
-                    </tr>
-                `;
-            }).reverse().join('');
+            tbody.innerHTML = [...inspeccionesFiltradas].reverse().map(insp => {
+                const pct = insp['% Hallado'] ? (parseFloat(insp['% Hallado']) * 100).toFixed(2) + '%' : 'N/A';
+                return `<tr>
+                    <td>${formatearFecha(insp['Fecha de inspeccion'])}</td>
+                    <td><span class="badge badge-info">${insp['Turno de Inspeccion'] || ''}</span></td>
+                    <td><strong>${insp['N° de Maquina'] || ''}</strong></td>
+                    <td>${insp['Producto'] || ''}</td>
+                    <td><strong>${pct}</strong></td>
+                    <td><span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">${insp['Resultado'] || ''}</span></td>
+                    <td>${insp['Inspector'] || ''}</td>
+                </tr>`;
+            }).join('');
         }
 
-        // Exportar a Excel
         function exportarExcel() {
             if (!inspeccionesFiltradas || inspeccionesFiltradas.length === 0) {
                 mostrarAlerta('No hay datos para exportar', 'error');
                 return;
             }
-
             const headers = Object.keys(inspeccionesFiltradas[0]);
             let csv = headers.join(',') + '\n';
-
             inspeccionesFiltradas.forEach(insp => {
-                const row = headers.map(header => {
-                    const value = insp[header] || '';
-                    return `"${value}"`;
-                });
-                csv += row.join(',') + '\n';
+                csv += headers.map(h => `"${insp[h] || ''}"`).join(',') + '\n';
             });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `Inspecciones_${new Date().toISOString().split('T')[0]}.csv`);
+            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+            link.download = `Inspecciones_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
-
             mostrarAlerta('✅ Archivo exportado exitosamente', 'success');
         }
 
-        // Cargar estadísticas y gráficos
+        // ============================================================
+        // ESTADÍSTICAS Y GRÁFICOS
+        // ============================================================
         async function cargarEstadisticas() {
-            if (!inspecciones || inspecciones.length === 0) {
-                await cargarHistorial();
-            }
+            if (!inspecciones || inspecciones.length === 0) await cargarHistorial();
 
-            // Tarjetas de resumen
             const total = inspecciones.length;
             const conformes = inspecciones.filter(i => i['Resultado'] === 'CONFORME').length;
             const noConformes = inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').length;
-            const tarjetasAmarillas = inspecciones.filter(i => i['Tipo de Tarjeta'] === 'TARJETA AMARILLA').length;
-            const tarjetasRojas = inspecciones.filter(i => i['Tipo de Tarjeta'] === 'TARJETA ROJA').length;
+            const tarjAm = inspecciones.filter(i => i['Tipo de Tarjeta'] === 'TARJETA AMARILLA').length;
+            const tarjRj = inspecciones.filter(i => i['Tipo de Tarjeta'] === 'TARJETA ROJA').length;
 
             document.getElementById('statsContainer').innerHTML = `
-                <div class="stat-card">
-                    <h4>Total Inspecciones</h4>
-                    <p>${total}</p>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%);">
-                    <h4>Conformes</h4>
-                    <p>${conformes}</p>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);">
-                    <h4>No Conformes</h4>
-                    <p>${noConformes}</p>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
-                    <h4>Tasa Conformidad</h4>
-                    <p>${total > 0 ? ((conformes/total)*100).toFixed(1) : 0}%</p>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                    <h4>Tarjetas Amarillas</h4>
-                    <p>${tarjetasAmarillas}</p>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%);">
-                    <h4>Tarjetas Rojas</h4>
-                    <p>${tarjetasRojas}</p>
-                </div>
-            `;
+                <div class="stat-card"><h4>Total Inspecciones</h4><p>${total}</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,var(--success),#059669)"><h4>Conformes</h4><p>${conformes}</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,var(--danger),#dc2626)"><h4>No Conformes</h4><p>${noConformes}</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#06b6d4,#0891b2)"><h4>Tasa Conformidad</h4><p>${total > 0 ? ((conformes/total)*100).toFixed(1) : 0}%</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h4>Tarjetas Amarillas</h4><p>${tarjAm}</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#dc3545,#bd2130)"><h4>Tarjetas Rojas</h4><p>${tarjRj}</p></div>`;
 
-            // Crear gráficos
             crearGraficoInspectorPie();
             crearGraficoInspectorBar();
             crearGraficoResultados();
@@ -1506,301 +1195,130 @@
             crearRankingMaquinas();
         }
 
-        // Gráfico Circular: % Inspecciones por Inspector
+        const COLORES = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#06b6d4','#8b5cf6','#ec4899','#14b8a6','#f97316','#84cc16','#a78bfa'];
+
+        function agrupar(campo) {
+            return inspecciones.reduce((acc, i) => {
+                const k = i[campo] || 'Sin asignar';
+                acc[k] = (acc[k] || 0) + 1;
+                return acc;
+            }, {});
+        }
+
         function crearGraficoInspectorPie() {
             const ctx = document.getElementById('chartInspectorPie');
             if (charts.inspectorPie) charts.inspectorPie.destroy();
-
-            const datos = {};
-            inspecciones.forEach(i => {
-                const inspector = i['Inspector'] || 'Sin asignar';
-                datos[inspector] = (datos[inspector] || 0) + 1;
-            });
-
+            const d = agrupar('Inspector');
             charts.inspectorPie = new Chart(ctx, {
                 type: 'pie',
-                data: {
-                    labels: Object.keys(datos),
-                    datasets: [{
-                        data: Object.values(datos),
-                        backgroundColor: ['#667eea', '#764ba2', '#10b981', '#f59e0b', '#ef4444', '#06b6d4']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
+                data: { labels: Object.keys(d), datasets: [{ data: Object.values(d), backgroundColor: COLORES }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
         }
 
-        // Gráfico de Barras: Inspecciones por Inspector
         function crearGraficoInspectorBar() {
             const ctx = document.getElementById('chartInspectorBar');
             if (charts.inspectorBar) charts.inspectorBar.destroy();
-
-            const datos = {};
-            inspecciones.forEach(i => {
-                const inspector = i['Inspector'] || 'Sin asignar';
-                datos[inspector] = (datos[inspector] || 0) + 1;
-            });
-
+            const d = agrupar('Inspector');
             charts.inspectorBar = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: Object.keys(datos),
-                    datasets: [{
-                        label: 'Inspecciones',
-                        data: Object.values(datos),
-                        backgroundColor: '#667eea'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
+                data: { labels: Object.keys(d), datasets: [{ label: 'Inspecciones', data: Object.values(d), backgroundColor: '#667eea' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        // Gráfico Circular: Conformes vs No Conformes
         function crearGraficoResultados() {
             const ctx = document.getElementById('chartResultados');
             if (charts.resultados) charts.resultados.destroy();
-
-            const conformes = inspecciones.filter(i => i['Resultado'] === 'CONFORME').length;
-            const noConformes = inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').length;
-
+            const c = inspecciones.filter(i => i['Resultado'] === 'CONFORME').length;
+            const nc = inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').length;
             charts.resultados = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: ['Conformes', 'No Conformes'],
-                    datasets: [{
-                        data: [conformes, noConformes],
-                        backgroundColor: ['#10b981', '#ef4444']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
+                data: { labels: ['Conformes', 'No Conformes'], datasets: [{ data: [c, nc], backgroundColor: ['#10b981', '#ef4444'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
         }
 
-        // Gráfico de Barras: No Conformes por Máquina
         function crearGraficoMaquinas() {
             const ctx = document.getElementById('chartMaquinas');
             if (charts.maquinas) charts.maquinas.destroy();
-
-            const datos = {};
+            const d = {};
             inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').forEach(i => {
-                const maquina = i['N° de Maquina'] || 'Sin asignar';
-                datos[maquina] = (datos[maquina] || 0) + 1;
+                const m = i['N° de Maquina'] || 'Sin asignar';
+                d[m] = (d[m] || 0) + 1;
             });
-
-            const sortedData = Object.entries(datos).sort((a, b) => b[1] - a[1]).slice(0, 10);
-
+            const sorted = Object.entries(d).sort((a, b) => b[1] - a[1]).slice(0, 10);
             charts.maquinas = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: sortedData.map(d => d[0]),
-                    datasets: [{
-                        label: 'No Conformes',
-                        data: sortedData.map(d => d[1]),
-                        backgroundColor: '#ef4444'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
+                data: { labels: sorted.map(x => x[0]), datasets: [{ label: 'No Conformes', data: sorted.map(x => x[1]), backgroundColor: '#ef4444' }] },
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } }
             });
         }
 
-        // Gráfico de Barras: Inspecciones por Turno
         function crearGraficoTurnos() {
             const ctx = document.getElementById('chartTurnos');
             if (charts.turnos) charts.turnos.destroy();
-
-            const datos = {};
-            inspecciones.forEach(i => {
-                const turno = i['Turno de Inspeccion'] || 'Sin asignar';
-                datos[turno] = (datos[turno] || 0) + 1;
-            });
-
+            const d = agrupar('Turno de Inspeccion');
             charts.turnos = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: Object.keys(datos),
-                    datasets: [{
-                        label: 'Inspecciones',
-                        data: Object.values(datos),
-                        backgroundColor: ['#667eea', '#764ba2']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
+                data: { labels: Object.keys(d), datasets: [{ label: 'Inspecciones', data: Object.values(d), backgroundColor: ['#667eea', '#764ba2'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        // Gráfico Circular: Tipos de Defecto
         function crearGraficoDefectos() {
             const ctx = document.getElementById('chartDefectos');
             if (charts.defectos) charts.defectos.destroy();
-
-            const datos = {};
+            const d = {};
             inspecciones.filter(i => i['TIpo de defecto']).forEach(i => {
-                const defecto = i['TIpo de defecto'];
-                datos[defecto] = (datos[defecto] || 0) + 1;
+                d[i['TIpo de defecto']] = (d[i['TIpo de defecto']] || 0) + 1;
             });
-
             charts.defectos = new Chart(ctx, {
                 type: 'pie',
-                data: {
-                    labels: Object.keys(datos),
-                    datasets: [{
-                        data: Object.values(datos),
-                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#06b6d4']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
+                data: { labels: Object.keys(d), datasets: [{ data: Object.values(d), backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#06b6d4'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
         }
 
-        // Gráfico de Línea: Tendencia por Mes
         function crearGraficoTendencia() {
             const ctx = document.getElementById('chartTendencia');
             if (charts.tendencia) charts.tendencia.destroy();
-
-            const datosMes = {};
+            const dm = {};
             inspecciones.forEach(i => {
-                if (i['Fecha de inspeccion']) {
-                    const fecha = new Date(i['Fecha de inspeccion']);
-                    const mes = fecha.toLocaleDateString('es', { month: 'short', year: 'numeric' });
-                    
-                    if (!datosMes[mes]) {
-                        datosMes[mes] = { total: 0, conformes: 0 };
-                    }
-                    datosMes[mes].total++;
-                    if (i['Resultado'] === 'CONFORME') {
-                        datosMes[mes].conformes++;
-                    }
-                }
+                if (!i['Fecha de inspeccion']) return;
+                const mes = new Date(i['Fecha de inspeccion']).toLocaleDateString('es', { month: 'short', year: 'numeric' });
+                if (!dm[mes]) dm[mes] = { total: 0, conformes: 0 };
+                dm[mes].total++;
+                if (i['Resultado'] === 'CONFORME') dm[mes].conformes++;
             });
-
-            const meses = Object.keys(datosMes).sort();
-            const tasas = meses.map(mes => {
-                const data = datosMes[mes];
-                return data.total > 0 ? (data.conformes / data.total) * 100 : 0;
-            });
-
+            const meses = Object.keys(dm).sort();
+            const tasas = meses.map(m => dm[m].total > 0 ? (dm[m].conformes / dm[m].total) * 100 : 0);
             charts.tendencia = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: meses,
-                    datasets: [{
-                        label: '% Conformidad',
-                        data: tasas,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
-                        }
-                    }
-                }
+                data: { labels: meses, datasets: [{ label: '% Conformidad', data: tasas, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.4, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } }
             });
         }
 
-        // Crear Ranking de Máquinas
         function crearRankingMaquinas() {
-            const datos = {};
+            const d = {};
             inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').forEach(i => {
-                const maquina = i['N° de Maquina'] || 'Sin asignar';
-                datos[maquina] = (datos[maquina] || 0) + 1;
+                const m = i['N° de Maquina'] || 'Sin asignar';
+                d[m] = (d[m] || 0) + 1;
             });
-
-            const ranking = Object.entries(datos)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-
-            let html = '<table style="width: 100%;"><thead><tr><th>#</th><th>Máquina</th><th>No Conformes</th></tr></thead><tbody>';
-            
-            ranking.forEach((item, index) => {
-                html += `<tr>
-                    <td><strong>${index + 1}</strong></td>
-                    <td>${item[0]}</td>
-                    <td><span class="badge badge-danger">${item[1]}</span></td>
-                </tr>`;
-            });
-            
-            html += '</tbody></table>';
-            document.getElementById('rankingMaquinas').innerHTML = html;
+            const ranking = Object.entries(d).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            document.getElementById('rankingMaquinas').innerHTML =
+                `<table style="width:100%"><thead><tr><th>#</th><th>Máquina</th><th>No Conformes</th></tr></thead><tbody>` +
+                ranking.map((item, idx) => `<tr><td><strong>${idx + 1}</strong></td><td>${item[0]}</td><td><span class="badge badge-danger">${item[1]}</span></td></tr>`).join('') +
+                `</tbody></table>`;
         }
 
-        // Formatear fecha
         function formatearFecha(fecha) {
             if (!fecha) return 'N/A';
-            const d = new Date(fecha);
-            return d.toLocaleDateString('es-PE');
+            return new Date(fecha).toLocaleDateString('es-PE');
         }
 
-        // Cargar historial al inicio
-        window.addEventListener('load', () => {
-            cargarHistorial();
-        });
+        window.addEventListener('load', () => cargarHistorial());
     </script>
 </body>
 </html>
