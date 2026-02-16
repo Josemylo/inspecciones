@@ -397,6 +397,22 @@
         }
         textarea { resize: vertical; min-height: 100px; }
 
+        /* ⭐ ESTILO ESPECIAL PARA UNIDADES MUESTREADAS (CALCULADO AUTOMÁTICAMENTE) */
+        #unidadesMuestreadas {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            color: white !important;
+            font-weight: 700 !important;
+            font-size: 18px !important;
+            text-align: center !important;
+            border: 2px solid #1e40af !important;
+            cursor: not-allowed !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+        }
+
+        #unidadesMuestreadas::placeholder {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
         .otros-container {
             margin-top: 8px;
             padding: 10px 12px;
@@ -740,10 +756,23 @@
                             <label class="required"># Cajas Muestreadas</label>
                             <input type="number" id="cajasMuestreadas" required placeholder="0">
                         </div>
+
+                        <!-- ⭐ CAMPO CALCULADO AUTOMÁTICAMENTE -->
                         <div class="form-group">
-                            <label class="required"># Unidades Muestreadas</label>
-                            <input type="number" id="unidadesMuestreadas" required placeholder="0" oninput="calcularPorcentajeHallado()">
+                            <label class="required">
+                                # Unidades Muestreadas 
+                                <span style="color: var(--primary); font-weight: 400; font-size: 12px;">
+                                    (Calculado según norma ISO 2859-1)
+                                </span>
+                            </label>
+                            <input type="number" 
+                                   id="unidadesMuestreadas" 
+                                   required 
+                                   placeholder="Se calcula automáticamente" 
+                                   readonly
+                                   oninput="calcularPorcentajeHallado()">
                         </div>
+
                         <div class="form-group">
                             <label># Unidades Defectuosas</label>
                             <div style="display: flex; align-items: center; gap: 12px;">
@@ -983,10 +1012,84 @@
         let inspeccionesFiltradas = [];
         let charts = {};
         let fotoBase64 = null;
-        let ultimaBusqueda = '';  // NUEVO
-        let timeoutBusqueda = null;  // NUEVO
+        let ultimaBusqueda = '';
+        let timeoutBusqueda = null;
 
         document.getElementById('fechaInspeccion').valueAsDate = new Date();
+
+        // ============================================================
+        // ⭐ TABLAS DE MUESTREO (ISO 2859-1 / MIL-STD-105E)
+        // ============================================================
+
+        // TABLA 1: Letras código del tamaño de muestra (Nivel II)
+        const TABLA_1_NIVEL_II = [
+            { min: 2, max: 8, letra: 'A' },
+            { min: 9, max: 15, letra: 'B' },
+            { min: 16, max: 25, letra: 'C' },
+            { min: 26, max: 50, letra: 'D' },
+            { min: 51, max: 90, letra: 'E' },
+            { min: 91, max: 150, letra: 'F' },
+            { min: 151, max: 280, letra: 'G' },
+            { min: 281, max: 500, letra: 'H' },
+            { min: 501, max: 1200, letra: 'J' },
+            { min: 1201, max: 3200, letra: 'K' },
+            { min: 3201, max: 10000, letra: 'L' },
+            { min: 10001, max: 35000, letra: 'M' },
+            { min: 35001, max: 150000, letra: 'N' },
+            { min: 150001, max: 500000, letra: 'P' },
+            { min: 500001, max: Infinity, letra: 'Q' }
+        ];
+
+        // TABLA 2-A: Tamaño de muestra según letra código
+        const TABLA_2A_TAMAÑO_MUESTRA = {
+            'A': 2,
+            'B': 3,
+            'C': 5,
+            'D': 8,
+            'E': 13,
+            'F': 20,
+            'G': 32,
+            'H': 50,
+            'J': 80,
+            'K': 125,
+            'L': 200,
+            'M': 315,
+            'N': 500,
+            'P': 800,
+            'Q': 1250,
+            'R': 2000
+        };
+
+        // ============================================================
+        // ⭐ CALCULAR TAMAÑO DE MUESTRA AUTOMÁTICAMENTE
+        // ============================================================
+        function calcularTamañoMuestra() {
+            const total = parseFloat(document.getElementById('totalUnidades').value) || 0;
+            const campoMuestra = document.getElementById('unidadesMuestreadas');
+            
+            if (total === 0) {
+                campoMuestra.value = '';
+                return;
+            }
+            
+            // 1. Obtener letra código según Tabla 1 (Nivel II)
+            let letraCodigo = '';
+            for (const rango of TABLA_1_NIVEL_II) {
+                if (total >= rango.min && total <= rango.max) {
+                    letraCodigo = rango.letra;
+                    break;
+                }
+            }
+            
+            // 2. Obtener tamaño de muestra según Tabla 2-A
+            const tamañoMuestra = TABLA_2A_TAMAÑO_MUESTRA[letraCodigo] || 0;
+            
+            // 3. Asignar valor calculado
+            campoMuestra.value = tamañoMuestra;
+            
+            // 4. Recalcular porcentaje hallado
+            calcularPorcentajeHallado();
+        }
 
         // ============================================================
         // BÚSQUEDA RÁPIDA POR MÁQUINA (NUEVO)
@@ -1253,7 +1356,7 @@
         }
 
         // ============================================================
-        // CALCULAR TOTAL DE UNIDADES
+        // ⭐ CALCULAR TOTAL DE UNIDADES (ACTUALIZADO)
         // ============================================================
         function calcularTotal() {
             let total = 0;
@@ -1262,12 +1365,17 @@
             const sub = cc * uc;
             document.getElementById('subtotalCompletas').value = sub;
             total += sub;
+            
             for (let i = 1; i <= 5; i++) {
                 const ci = document.getElementById(`cajasSaldo${i}`);
                 const ui = document.getElementById(`unidadesCaja${i}`);
                 if (ci && ui) total += (parseFloat(ci.value) || 0) * (parseFloat(ui.value) || 0);
             }
+            
             document.getElementById('totalUnidades').value = total;
+            
+            // ⭐ CALCULAR AUTOMÁTICAMENTE EL TAMAÑO DE MUESTRA
+            calcularTamañoMuestra();
         }
 
         // ============================================================
@@ -1520,6 +1628,7 @@
             cajasSaldoCount = 0;
             document.getElementById('totalUnidades').value = '';
             document.getElementById('subtotalCompletas').value = '';
+            document.getElementById('unidadesMuestreadas').value = '';  // ⭐ Limpiar campo calculado
             document.getElementById('indicadorPorcentaje').style.display = 'none';
             document.getElementById('btnAgregarCaja').disabled = false;
             document.getElementById('btnAgregarCaja').style.opacity = '1';
@@ -1808,4 +1917,3 @@
     </script>
 </body>
 </html>
-
