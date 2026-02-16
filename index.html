@@ -99,7 +99,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ============ BÚSQUEDA RÁPIDA (NUEVO) ============ */
+        /* ============ BÚSQUEDA RÁPIDA ============ */
         .quick-search-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 16px;
@@ -202,7 +202,7 @@
             background: rgba(255,255,255,0.2);
         }
 
-        /* ============ MODAL RECIENTES (NUEVO) ============ */
+        /* ============ MODAL RECIENTES (MEJORADO) ============ */
         .modal {
             display: none;
             position: fixed;
@@ -277,6 +277,101 @@
             padding: 16px 20px;
             overflow-y: auto;
             flex: 1;
+        }
+
+        /* ⭐ ESTILOS PARA LISTA DE INSPECTORES */
+        .inspector-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .inspector-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .inspector-item:active {
+            transform: scale(0.98);
+        }
+
+        .inspector-name {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inspector-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ⭐ ESTILOS PARA LISTA DE MÁQUINAS */
+        .maquina-item {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .maquina-item:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(4px);
+        }
+
+        .maquina-item:active {
+            transform: scale(0.98);
+        }
+
+        .maquina-nombre {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .maquina-tiempo {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .back-button {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: var(--border);
         }
 
         .recent-item {
@@ -538,7 +633,7 @@
             <div id="tab-nueva" class="tab-content active">
                 <div id="alertContainer"></div>
 
-                <!-- BÚSQUEDA RÁPIDA (NUEVO) -->
+                <!-- BÚSQUEDA RÁPIDA -->
                 <div class="quick-search-section">
                     <div class="quick-search-title">⚡ Búsqueda Rápida</div>
                     
@@ -696,18 +791,18 @@
                         </div>
                     </div>
 
-                    <!-- CAJAS ENCONTRADAS EN PRODUCCIÓN -->
+                    <!-- ⭐ CAJAS ENCONTRADAS EN PRODUCCIÓN (CAMPOS OBLIGATORIOS) -->
                     <div class="section-card">
                         <div class="section-title">📦 Cajas Encontradas en Producción</div>
                         
                         <div class="grid-3">
                             <div class="form-group">
-                                <label># Cajas Completas</label>
-                                <input type="number" id="cajasCompletas" placeholder="0" oninput="calcularTotal()">
+                                <label class="required"># Cajas Completas</label>
+                                <input type="number" id="cajasCompletas" placeholder="0" required oninput="calcularTotal()">
                             </div>
                             <div class="form-group">
-                                <label>Unidades x Caja</label>
-                                <input type="number" id="unidadesCajaCompleta" placeholder="0" oninput="calcularTotal()">
+                                <label class="required">Unidades x Caja</label>
+                                <input type="number" id="unidadesCajaCompleta" placeholder="0" required oninput="calcularTotal()">
                             </div>
                             <div class="form-group">
                                 <label>Subtotal</label>
@@ -988,11 +1083,11 @@
         </div>
     </div>
 
-    <!-- MODAL RECIENTES (NUEVO) -->
+    <!-- ⭐ MODAL RECIENTES (MEJORADO CON INSPECTORES Y MÁQUINAS) -->
     <div id="modalRecientes" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📋 Inspecciones Recientes</h3>
+                <h3 id="modalTitle">📋 Inspecciones Recientes</h3>
                 <button class="modal-close" onclick="cerrarRecientes()">✕</button>
             </div>
             <div class="modal-body" id="recientesBody">
@@ -1005,7 +1100,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySp9E9vzdS1BP-ic-ubLJ5urwZhyjkiafaaKAGZwMolXoUwXOxA7fKuf0gBEeN9kAg/exec';  // ⚠️ REEMPLAZA ESTO CON TU URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-uW-q5FhbKKbEWePfgsnpaybC1-fOtOIvvesTno-RohVb0hLamWMQkeZS0xiM_nfa/exec';  // ⚠️ REEMPLAZA ESTO CON TU URL
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
@@ -1014,6 +1109,7 @@
         let fotoBase64 = null;
         let ultimaBusqueda = '';
         let timeoutBusqueda = null;
+        let inspectorSeleccionado = null;  // ⭐ NUEVO
 
         document.getElementById('fechaInspeccion').valueAsDate = new Date();
 
@@ -1092,7 +1188,7 @@
         }
 
         // ============================================================
-        // BÚSQUEDA RÁPIDA POR MÁQUINA (NUEVO)
+        // BÚSQUEDA RÁPIDA POR MÁQUINA
         // ============================================================
         function buscarUltimaInspeccion() {
             const input = document.getElementById('busquedaMaquina');
@@ -1177,8 +1273,13 @@
             suggestionCard.style.display = 'block';
         }
 
+        // ============================================================
+        // ⭐ NUEVO: CARGAR DATOS DE INSPECCIÓN (CAMPOS SELECTIVOS)
+        // ============================================================
         function cargarDatosInspeccion(insp) {
-            // NO carga el inspector (debe seleccionarlo siempre)
+            // ✅ AUTO-RELLENAR CAMPOS FIJOS
+            setSelectValue('inspector', insp['Inspector']);
+            setSelectValue('turnoInspeccion', insp['Turno de Inspeccion']);
             document.getElementById('numMaquina').value = insp['N° de Maquina'] || '';
             document.getElementById('producto').value = insp['Producto'] || '';
             document.getElementById('ordenProduccion').value = insp['Orden de Produccion'] || '';
@@ -1192,12 +1293,21 @@
             document.getElementById('operario2').value = insp['Operario2'] || '';
             setSelectValue('turnoOperario2', insp['Turno operario 2']);
 
+            // ❌ NO RELLENAR (quedan en blanco para completar manualmente)
+            // - Cajas
+            // - Resultado
+            // - Defectos
+            // - Observaciones
+
+            // Cerrar modal y limpiar búsqueda
+            cerrarRecientes();
             document.getElementById('suggestionCard').style.display = 'none';
             document.getElementById('busquedaMaquina').value = '';
 
+            // Scroll suave al formulario
             document.querySelector('.section-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            mostrarAlerta('✅ Datos cargados. Solo completa la información variable y guarda.', 'success');
+            mostrarAlerta('✅ Datos cargados. Completa cajas, resultado y guarda.', 'success');
         }
 
         function ignorarSugerencia() {
@@ -1218,51 +1328,50 @@
             const option = Array.from(select.options).find(opt => opt.value === value);
             if (option) {
                 select.value = value;
+                // Disparar evento change para activar "Otros" si es necesario
+                select.dispatchEvent(new Event('change'));
             }
         }
 
         // ============================================================
-        // MODAL RECIENTES (NUEVO)
+        // ⭐ NUEVO: MODAL RECIENTES MEJORADO (INSPECTORES → MÁQUINAS)
         // ============================================================
         async function abrirRecientes() {
             const modal = document.getElementById('modalRecientes');
             const body = document.getElementById('recientesBody');
+            const title = document.getElementById('modalTitle');
+            
+            inspectorSeleccionado = null;
             
             modal.classList.add('active');
-            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspecciones recientes...</span></div>';
+            title.textContent = '📋 Selecciona Inspector';
+            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspectores...</span></div>';
 
             try {
-                const response = await fetch(`${SCRIPT_URL}?action=recientes`);
+                const response = await fetch(`${SCRIPT_URL}?action=inspectores`);
                 const data = await response.json();
 
                 if (data && data.length > 0) {
-                    body.innerHTML = data.map(insp => {
-                        const tiempo = calcularTiempoTranscurrido(insp['Timestamp']);
-                        return `
-                            <div class="recent-item" onclick='cargarDatosInspeccion(${JSON.stringify(insp).replace(/'/g, "&apos;")})'>
-                                <div class="recent-time">⏰ ${tiempo}</div>
-                                <div class="recent-details">
-                                    <strong>🏭 ${insp['N° de Maquina'] || 'N/A'}</strong> | 
-                                    📦 ${insp['Producto'] || 'N/A'}<br>
-                                    🔢 ${insp['Orden de Produccion'] || 'N/A'} | 
-                                    <span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">
-                                        ${insp['Resultado'] || 'N/A'}
-                                    </span>
-                                </div>
+                    body.innerHTML = data.map(insp => `
+                        <div class="inspector-item" onclick='seleccionarInspector("${insp.nombre.replace(/'/g, "\\'")})")'>
+                            <div class="inspector-name">
+                                <span>👤</span>
+                                <span>${insp.nombre}</span>
                             </div>
-                        `;
-                    }).join('');
+                            <div class="inspector-count">${insp.cantidad}</div>
+                        </div>
+                    `).join('');
                 } else {
                     body.innerHTML = `
                         <div class="empty-recents">
-                            <div class="empty-recents-icon">📋</div>
-                            <div style="font-weight: 600; margin-bottom: 4px;">No hay inspecciones recientes</div>
+                            <div class="empty-recents-icon">👤</div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">No hay inspectores recientes</div>
                             <div style="font-size: 13px;">Las inspecciones de las últimas 6 horas aparecerán aquí</div>
                         </div>
                     `;
                 }
             } catch (error) {
-                console.error('Error al cargar recientes:', error);
+                console.error('Error al cargar inspectores:', error);
                 body.innerHTML = `
                     <div class="empty-recents">
                         <div class="empty-recents-icon">⚠️</div>
@@ -1273,8 +1382,86 @@
             }
         }
 
+        async function seleccionarInspector(inspector) {
+            const body = document.getElementById('recientesBody');
+            const title = document.getElementById('modalTitle');
+            
+            inspectorSeleccionado = inspector;
+            
+            title.textContent = `🏭 Máquinas de ${inspector}`;
+            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando máquinas...</span></div>';
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=maquinasPorInspector&inspector=${encodeURIComponent(inspector)}`);
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    body.innerHTML = `
+                        <button class="back-button" onclick="abrirRecientes()">
+                            ← Volver a inspectores
+                        </button>
+                        ${data.map(maq => {
+                            const tiempo = calcularTiempoTranscurrido(maq.timestamp);
+                            return `
+                                <div class="maquina-item" onclick='cargarInspeccionPorInspectorMaquina("${inspector.replace(/'/g, "\\'")}","${maq.maquina}")'>
+                                    <div class="maquina-nombre">🏭 ${maq.maquina}</div>
+                                    <div class="maquina-tiempo">⏰ ${tiempo}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    `;
+                } else {
+                    body.innerHTML = `
+                        <button class="back-button" onclick="abrirRecientes()">
+                            ← Volver a inspectores
+                        </button>
+                        <div class="empty-recents">
+                            <div class="empty-recents-icon">🏭</div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">No hay máquinas registradas</div>
+                            <div style="font-size: 13px;">Este inspector no tiene inspecciones recientes</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error al cargar máquinas:', error);
+                body.innerHTML = `
+                    <button class="back-button" onclick="abrirRecientes()">
+                        ← Volver a inspectores
+                    </button>
+                    <div class="empty-recents">
+                        <div class="empty-recents-icon">⚠️</div>
+                        <div style="font-weight: 600; margin-bottom: 4px; color: var(--danger);">Error al cargar</div>
+                        <div style="font-size: 13px;">Verifica tu conexión e intenta de nuevo</div>
+                    </div>
+                `;
+            }
+        }
+
+        async function cargarInspeccionPorInspectorMaquina(inspector, maquina) {
+            const body = document.getElementById('recientesBody');
+            
+            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspección...</span></div>';
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=ultimaInspeccionInspectorMaquina&inspector=${encodeURIComponent(inspector)}&maquina=${encodeURIComponent(maquina)}`);
+                const data = await response.json();
+
+                if (data && data.encontrada) {
+                    cargarDatosInspeccion(data.inspeccion);
+                } else {
+                    mostrarAlerta('⚠️ No se encontró inspección reciente', 'error');
+                    cerrarRecientes();
+                }
+            } catch (error) {
+                console.error('Error al cargar inspección:', error);
+                mostrarAlerta('❌ Error al cargar inspección', 'error');
+                cerrarRecientes();
+            }
+        }
+
         function cerrarRecientes() {
             document.getElementById('modalRecientes').classList.remove('active');
+            inspectorSeleccionado = null;
         }
 
         document.getElementById('modalRecientes').addEventListener('click', function(e) {
@@ -1628,7 +1815,7 @@
             cajasSaldoCount = 0;
             document.getElementById('totalUnidades').value = '';
             document.getElementById('subtotalCompletas').value = '';
-            document.getElementById('unidadesMuestreadas').value = '';  // ⭐ Limpiar campo calculado
+            document.getElementById('unidadesMuestreadas').value = '';
             document.getElementById('indicadorPorcentaje').style.display = 'none';
             document.getElementById('btnAgregarCaja').disabled = false;
             document.getElementById('btnAgregarCaja').style.opacity = '1';
