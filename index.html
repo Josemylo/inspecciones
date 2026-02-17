@@ -6,540 +6,98 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Inspección - Inyección y Soplado</title>
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --primary: #667eea;
-            --primary-dark: #5568d3;
-            --secondary: #764ba2;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text: #1e293b;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
+            --primary: #667eea; --primary-dark: #5568d3; --secondary: #764ba2;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --bg: #f8fafc; --surface: #ffffff; --text: #1e293b;
+            --text-secondary: #64748b; --border: #e2e8f0;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: max(env(safe-area-inset-top), 16px) 20px 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; overflow-x: hidden; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: max(env(safe-area-inset-top), 16px) 20px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
         .header h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
         .header p { font-size: 13px; opacity: 0.9; }
-
-        .tabs {
-            display: flex;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 76px;
-            z-index: 99;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+        .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 76px; z-index: 99; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .tabs::-webkit-scrollbar { display: none; }
-
-        .tab {
-            flex: 1;
-            min-width: 100px;
-            padding: 14px 16px;
-            text-align: center;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-            position: relative;
-            white-space: nowrap;
-        }
+        .tab { flex: 1; min-width: 100px; padding: 14px 16px; text-align: center; cursor: pointer; background: transparent; border: none; font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: all 0.2s; position: relative; white-space: nowrap; }
         .tab.active { color: var(--primary); }
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--primary);
-        }
-
+        .tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--primary); }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 0 80px 0; }
         .content { padding: 16px; }
-
         .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* BÚSQUEDA RÁPIDA */
+        .quick-search-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(102,126,234,0.3); color: white; }
+        .quick-search-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .search-input-wrapper { position: relative; margin-bottom: 12px; }
+        .search-input-wrapper input { width: 100%; padding: 14px 45px 14px 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 500; background: white; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .search-input-wrapper .search-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none; }
+        .suggestion-card { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 14px; margin-top: 12px; color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .suggestion-header { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .suggestion-info { font-size: 14px; margin-bottom: 4px; }
+        .suggestion-info strong { color: var(--primary); }
+        .suggestion-buttons { display: flex; gap: 8px; margin-top: 12px; }
+        .quick-actions { display: flex; gap: 8px; }
+        .quick-btn { flex: 1; padding: 12px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px); }
+        .quick-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.2); }
 
-        /* ============ BÚSQUEDA RÁPIDA ============ */
-        .quick-search-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-            color: white;
-        }
-        
-        .quick-search-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        /* MODAL MEJORADO */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--surface); border-radius: 16px; max-width: 500px; width: 100%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .modal-header h3 { font-size: 18px; font-weight: 600; color: var(--text); }
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-secondary); transition: all 0.2s; }
+        .modal-close:hover { background: var(--border); }
+        .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
 
-        .search-input-wrapper {
-            position: relative;
-            margin-bottom: 12px;
-        }
+        /* INSPECTORES */
+        .inspector-item { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; color: white; display: flex; align-items: center; justify-content: space-between; }
+        .inspector-item:hover { transform: translateX(4px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+        .inspector-item:active { transform: scale(0.98); }
+        .inspector-name { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .inspector-badge { background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
 
-        .search-input-wrapper input {
-            width: 100%;
-            padding: 14px 45px 14px 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            background: white;
-            color: var(--text);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        /* MÁQUINAS */
+        .maquina-item { background: var(--bg); border: 2px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
+        .maquina-item:hover { border-color: var(--primary); background: rgba(102,126,234,0.05); transform: translateX(4px); box-shadow: 0 4px 12px rgba(102,126,234,0.2); }
+        .maquina-item:active { transform: scale(0.98); }
+        .maquina-nombre { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+        .maquina-tiempo { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+        .back-button { background: var(--bg); border: 1.5px solid var(--border); padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--text); margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; font-size: 14px; }
+        .back-button:hover { background: var(--border); }
 
-        .search-input-wrapper .search-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-            pointer-events: none;
-        }
+        .empty-recents { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+        .empty-recents-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
 
-        .suggestion-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 14px;
-            margin-top: 12px;
-            color: var(--text);
-            animation: slideDown 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .suggestion-header {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .suggestion-info {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .suggestion-info strong {
-            color: var(--primary);
-        }
-
-        .suggestion-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .quick-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .quick-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-            backdrop-filter: blur(10px);
-        }
-
-        .quick-btn:active {
-            transform: scale(0.96);
-            background: rgba(255,255,255,0.2);
-        }
-
-        /* ============ MODAL RECIENTES (MEJORADO) ============ */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 1000;
-            animation: fadeIn 0.2s;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: var(--surface);
-            border-radius: 16px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 80vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-header h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .modal-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            border: none;
-            background: var(--bg);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
-
-        .modal-close:hover {
-            background: var(--border);
-        }
-
-        .modal-body {
-            padding: 16px 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        /* ⭐ ESTILOS PARA LISTA DE INSPECTORES */
-        .inspector-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .inspector-item:hover {
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .inspector-item:active {
-            transform: scale(0.98);
-        }
-
-        .inspector-name {
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .inspector-count {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            backdrop-filter: blur(10px);
-        }
-
-        /* ⭐ ESTILOS PARA LISTA DE MÁQUINAS */
-        .maquina-item {
-            background: var(--bg);
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .maquina-item:hover {
-            border-color: var(--primary);
-            background: rgba(102, 126, 234, 0.05);
-            transform: translateX(4px);
-        }
-
-        .maquina-item:active {
-            transform: scale(0.98);
-        }
-
-        .maquina-nombre {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-
-        .maquina-tiempo {
-            font-size: 12px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .back-button {
-            background: var(--bg);
-            border: 1.5px solid var(--border);
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 16px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .back-button:hover {
-            background: var(--border);
-        }
-
-        .recent-item {
-            background: var(--bg);
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .recent-item:hover {
-            border-color: var(--primary);
-            background: rgba(102, 126, 234, 0.05);
-            transform: translateX(4px);
-        }
-
-        .recent-item:active {
-            transform: scale(0.98);
-        }
-
-        .recent-time {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .recent-details {
-            font-size: 14px;
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        .recent-details strong {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .recent-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: var(--primary);
-            color: white;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 6px;
-        }
-
-        .empty-recents {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-
-        .empty-recents-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-            opacity: 0.3;
-        }
-
-        /* ============ RESTO DE ESTILOS ============ */
-        .section-card {
-            background: var(--surface);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        /* FORMULARIO */
+        .section-card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
         .form-group label.required::after { content: ' *'; color: var(--danger); }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            font-family: inherit;
-            background: var(--surface);
-            color: var(--text);
-            transition: all 0.2s;
-            -webkit-appearance: none;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
+        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; background: var(--surface); color: var(--text); transition: all 0.2s; -webkit-appearance: none; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
         input:read-only { background: var(--bg); color: var(--text-secondary); }
-        select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 36px;
-        }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
         textarea { resize: vertical; min-height: 100px; }
 
-        /* ⭐ ESTILO ESPECIAL PARA UNIDADES MUESTREADAS (CALCULADO AUTOMÁTICAMENTE) */
-        #unidadesMuestreadas {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-            color: white !important;
-            font-weight: 700 !important;
-            font-size: 18px !important;
-            text-align: center !important;
-            border: 2px solid #1e40af !important;
-            cursor: not-allowed !important;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
-        }
+        /* CAMPO UNIDADES MUESTREADAS */
+        #unidadesMuestreadas { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important; color: white !important; font-weight: 700 !important; font-size: 18px !important; text-align: center !important; border: 2px solid #1e40af !important; cursor: not-allowed !important; box-shadow: 0 4px 12px rgba(37,99,235,0.4) !important; }
+        #unidadesMuestreadas::placeholder { color: rgba(255,255,255,0.7) !important; }
 
-        #unidadesMuestreadas::placeholder {
-            color: rgba(255, 255, 255, 0.7) !important;
-        }
-
-        .otros-container {
-            margin-top: 8px;
-            padding: 10px 12px;
-            background: #f0f4ff;
-            border: 1.5px solid var(--primary);
-            border-radius: 8px;
-            animation: slideDown 0.25s ease;
-            display: none;
-        }
+        .otros-container { margin-top: 8px; padding: 10px 12px; background: #f0f4ff; border: 1.5px solid var(--primary); border-radius: 8px; display: none; }
         .otros-container.visible { display: block; }
-        .otros-container label {
-            font-size: 12px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .otros-container input {
-            border-color: var(--primary);
-            background: white;
-        }
+        .otros-container label { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 6px; }
+        .otros-container input { border-color: var(--primary); background: white; }
 
-        .btn {
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; padding: 14px 20px; border: none; border-radius: 10px;
-            font-size: 15px; font-weight: 600; cursor: pointer;
-            transition: all 0.2s; width: 100%; font-family: inherit;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; font-family: inherit; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
         .btn-primary:active { transform: scale(0.98); }
         .btn-secondary { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
         .btn-success { background: var(--success); color: white; }
@@ -548,29 +106,16 @@
         .btn-icon { padding: 10px; width: auto; border-radius: 8px; }
         .btn-group { display: flex; gap: 12px; margin-top: 16px; }
 
-        .caja-item {
-            background: var(--bg); padding: 12px; border-radius: 8px;
-            margin-bottom: 12px; border: 1px solid var(--border);
-        }
+        .caja-item { background: var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border); }
         .caja-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .caja-title { font-weight: 600; color: var(--text); font-size: 14px; }
-
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-
         .conditional-section { display: none; }
         .conditional-section.active { display: block; animation: slideDown 0.3s; }
+        @keyframes slideDown { from { opacity: 0; max-height: 0; overflow: hidden; } to { opacity: 1; max-height: 3000px; } }
 
-        @keyframes slideDown {
-            from { opacity: 0; max-height: 0; overflow: hidden; }
-            to { opacity: 1; max-height: 3000px; }
-        }
-
-        .alert {
-            padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
-            display: flex; align-items: flex-start; gap: 10px;
-            font-size: 14px; animation: slideDown 0.3s;
-        }
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 14px; animation: slideDown 0.3s; }
         .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
         .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
         .alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
@@ -598,13 +143,13 @@
 
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
         .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
-
         .filters-section { background: var(--surface); padding: 16px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-
         .chart-container { background: var(--surface); padding: 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
         .chart-wrapper { position: relative; height: 300px; }
+
+        .recent-badge { display: inline-block; padding: 2px 8px; background: var(--primary); color: white; border-radius: 6px; font-size: 11px; font-weight: 600; margin-left: 6px; }
 
         @media (max-width: 640px) {
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
@@ -619,56 +164,38 @@
         <h1>📋 Sistema de Inspección</h1>
         <p>Área de Inyección y Soplado</p>
     </div>
-
     <div class="tabs">
         <button class="tab active" onclick="showTab('nueva', this)">➕ Nueva</button>
         <button class="tab" onclick="showTab('historial', this)">📊 Historial</button>
         <button class="tab" onclick="showTab('estadisticas', this)">📈 Estadísticas</button>
     </div>
-
     <div class="container">
         <div class="content">
 
-            <!-- ============================== TAB: NUEVA ============================== -->
+            <!-- TAB NUEVA -->
             <div id="tab-nueva" class="tab-content active">
                 <div id="alertContainer"></div>
-
-                <!-- BÚSQUEDA RÁPIDA -->
                 <div class="quick-search-section">
                     <div class="quick-search-title">⚡ Búsqueda Rápida</div>
-                    
                     <div class="search-input-wrapper">
-                        <input type="text" 
-                               id="busquedaMaquina" 
-                               placeholder="Escribe N° de Máquina (ej: I-35)" 
-                               oninput="buscarUltimaInspeccion()"
-                               autocomplete="off">
+                        <input type="text" id="busquedaMaquina" placeholder="Escribe N° de Máquina (ej: I-35)" oninput="buscarUltimaInspeccion()" autocomplete="off">
                         <span class="search-icon">🔍</span>
                     </div>
-
                     <div id="suggestionCard" style="display: none;"></div>
-
                     <div class="quick-actions">
-                        <button type="button" class="quick-btn" onclick="abrirRecientes()">
-                            📋 Ver Recientes
-                        </button>
-                        <button type="button" class="quick-btn" onclick="empezarEnBlanco()">
-                            📝 En Blanco
-                        </button>
+                        <button type="button" class="quick-btn" onclick="abrirRecientes()">📋 Ver Recientes</button>
+                        <button type="button" class="quick-btn" onclick="empezarEnBlanco()">📝 En Blanco</button>
                     </div>
                 </div>
-                
-                <form id="formInspeccion">
 
+                <form id="formInspeccion">
                     <!-- INFORMACIÓN GENERAL -->
                     <div class="section-card">
                         <div class="section-title">📅 Información General</div>
-                        
                         <div class="form-group">
                             <label class="required">Fecha de Inspección</label>
                             <input type="date" id="fechaInspeccion" required>
                         </div>
-
                         <div class="form-group">
                             <label class="required">Turno de Inspección</label>
                             <select id="turnoInspeccion" required>
@@ -677,7 +204,6 @@
                                 <option value="NOCHE">NOCHE</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="required">Inspector</label>
                             <select id="inspector" required onchange="toggleOtros('inspector')">
@@ -700,7 +226,6 @@
                                 <input type="text" id="inspector-manual" placeholder="Nombre completo">
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="required">Coordinador Calidad de Turno</label>
                             <select id="coordinadorCalidad" required onchange="toggleOtros('coordinadorCalidad')">
@@ -720,12 +245,10 @@
                     <!-- MÁQUINA Y PRODUCCIÓN -->
                     <div class="section-card">
                         <div class="section-title">🏭 Máquina y Producción</div>
-                        
                         <div class="form-group">
                             <label class="required">N° de Máquina</label>
                             <input type="text" id="numMaquina" required placeholder="Ej: I-35, S-10">
                         </div>
-
                         <div class="form-group">
                             <label class="required">Coordinador Producción de Turno</label>
                             <select id="coordinadorProduccion" required onchange="toggleOtros('coordinadorProduccion')">
@@ -740,7 +263,6 @@
                                 <input type="text" id="coordinadorProduccion-manual" placeholder="Nombre completo">
                             </div>
                         </div>
-
                         <div class="grid-2">
                             <div class="form-group">
                                 <label class="required">Orden de Producción</label>
@@ -751,7 +273,6 @@
                                 <input type="number" id="cantidadProducir" required placeholder="Cantidad">
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="required">Producto</label>
                             <input type="text" id="producto" required placeholder="Nombre del producto">
@@ -762,12 +283,8 @@
                     <div class="section-card">
                         <div class="section-title">👥 Operarios</div>
                         <div class="grid-2">
-                            <div class="form-group">
-                                <label>Operario 1</label>
-                                <input type="text" id="operario1" placeholder="Nombre o código">
-                            </div>
-                            <div class="form-group">
-                                <label>Turno</label>
+                            <div class="form-group"><label>Operario 1</label><input type="text" id="operario1" placeholder="Nombre o código"></div>
+                            <div class="form-group"><label>Turno</label>
                                 <select id="turnoOperario1">
                                     <option value="">Seleccionar...</option>
                                     <option value="DIA">DÍA</option>
@@ -776,12 +293,8 @@
                             </div>
                         </div>
                         <div class="grid-2">
-                            <div class="form-group">
-                                <label>Operario 2</label>
-                                <input type="text" id="operario2" placeholder="Nombre o código">
-                            </div>
-                            <div class="form-group">
-                                <label>Turno</label>
+                            <div class="form-group"><label>Operario 2</label><input type="text" id="operario2" placeholder="Nombre o código"></div>
+                            <div class="form-group"><label>Turno</label>
                                 <select id="turnoOperario2">
                                     <option value="">Seleccionar...</option>
                                     <option value="DIA">DÍA</option>
@@ -791,32 +304,26 @@
                         </div>
                     </div>
 
-                    <!-- ⭐ CAJAS ENCONTRADAS EN PRODUCCIÓN (CAMPOS OBLIGATORIOS) -->
+                    <!-- CAJAS ENCONTRADAS EN PRODUCCIÓN -->
                     <div class="section-card">
                         <div class="section-title">📦 Cajas Encontradas en Producción</div>
-                        
                         <div class="grid-3">
                             <div class="form-group">
                                 <label class="required"># Cajas Completas</label>
-                                <input type="number" id="cajasCompletas" placeholder="0" required oninput="calcularTotal()">
+                                <input type="number" id="cajasCompletas" placeholder="0" required min="0" oninput="calcularTotal()">
                             </div>
                             <div class="form-group">
                                 <label class="required">Unidades x Caja</label>
-                                <input type="number" id="unidadesCajaCompleta" placeholder="0" required oninput="calcularTotal()">
+                                <input type="number" id="unidadesCajaCompleta" placeholder="0" required min="0" oninput="calcularTotal()">
                             </div>
                             <div class="form-group">
                                 <label>Subtotal</label>
                                 <input type="number" id="subtotalCompletas" placeholder="0" readonly>
                             </div>
                         </div>
-
                         <div class="grid-2">
-                            <div class="form-group">
-                                <label>Fecha Producción</label>
-                                <input type="date" id="fechaCajasCompletas">
-                            </div>
-                            <div class="form-group">
-                                <label>Turno</label>
+                            <div class="form-group"><label>Fecha Producción</label><input type="date" id="fechaCajasCompletas"></div>
+                            <div class="form-group"><label>Turno</label>
                                 <select id="turnoCajasCompletas">
                                     <option value="">Seleccionar...</option>
                                     <option value="DIA">DÍA</option>
@@ -824,19 +331,13 @@
                                 </select>
                             </div>
                         </div>
-
                         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
-
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <div style="font-weight: 600; color: var(--text);">Cajas Saldo</div>
-                            <button type="button" class="btn btn-outline btn-small" onclick="agregarCajaSaldo()" id="btnAgregarCaja">
-                                ➕ Agregar Caja
-                            </button>
+                            <button type="button" class="btn btn-outline btn-small" onclick="agregarCajaSaldo()" id="btnAgregarCaja">➕ Agregar Caja</button>
                         </div>
                         <div id="cajasSaldoContainer"></div>
-
                         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
-
                         <div class="form-group">
                             <label style="font-size: 16px; font-weight: 600;">Total Unidades Inspeccionadas</label>
                             <input type="number" id="totalUnidades" placeholder="0" readonly style="font-size: 18px; font-weight: 600; background: var(--bg);">
@@ -846,28 +347,17 @@
                     <!-- CAJAS INSPECCIONADAS -->
                     <div class="section-card">
                         <div class="section-title">🔍 Cajas Inspeccionadas</div>
-                        
                         <div class="form-group">
                             <label class="required"># Cajas Muestreadas</label>
                             <input type="number" id="cajasMuestreadas" required placeholder="0">
                         </div>
-
-                        <!-- ⭐ CAMPO CALCULADO AUTOMÁTICAMENTE -->
                         <div class="form-group">
                             <label class="required">
-                                # Unidades Muestreadas 
-                                <span style="color: var(--primary); font-weight: 400; font-size: 12px;">
-                                    (Calculado según norma ISO 2859-1)
-                                </span>
+                                # Unidades Muestreadas
+                                <span style="color: var(--primary); font-weight: 400; font-size: 12px;">(Calculado según norma ISO 2859-1)</span>
                             </label>
-                            <input type="number" 
-                                   id="unidadesMuestreadas" 
-                                   required 
-                                   placeholder="Se calcula automáticamente" 
-                                   readonly
-                                   oninput="calcularPorcentajeHallado()">
+                            <input type="number" id="unidadesMuestreadas" required placeholder="Se calcula automáticamente" readonly>
                         </div>
-
                         <div class="form-group">
                             <label># Unidades Defectuosas</label>
                             <div style="display: flex; align-items: center; gap: 12px;">
@@ -890,11 +380,10 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN CONDICIONAL: NO CONFORME -->
+                    <!-- SECCIÓN NO CONFORME -->
                     <div id="seccionNoConforme" class="conditional-section">
                         <div class="section-card">
                             <div class="section-title">⚠️ Detalles del Defecto</div>
-                            
                             <div class="form-group">
                                 <label class="required">Tipo de Defecto</label>
                                 <select id="tipoDefecto">
@@ -905,12 +394,10 @@
                                     <option value="INOCUIDAD">INOCUIDAD</option>
                                 </select>
                             </div>
-
                             <div class="form-group">
                                 <label class="required">Problema/Defecto</label>
                                 <textarea id="problema" placeholder="Descripción detallada del problema"></textarea>
                             </div>
-
                             <div class="form-group">
                                 <label>Tipo de Tarjeta</label>
                                 <select id="tipoTarjeta">
@@ -919,11 +406,9 @@
                                     <option value="TARJETA ROJA">TARJETA ROJA</option>
                                 </select>
                             </div>
-
-                            <div class="form-group" style="margin-top: 8px;">
+                            <div class="form-group">
                                 <label>📸 Foto del Defecto <span style="color: var(--text-secondary); font-weight: 400;">(opcional)</span></label>
-                                <div id="fotoContainer"
-                                     style="border: 2px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg);"
+                                <div id="fotoContainer" style="border: 2px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg);"
                                      onclick="document.getElementById('inputFoto').click()"
                                      ondragover="event.preventDefault(); this.style.borderColor='var(--primary)'"
                                      ondragleave="this.style.borderColor='var(--border)'"
@@ -963,42 +448,20 @@
                 </form>
             </div>
 
-            <!-- ============================== TAB: HISTORIAL ============================== -->
+            <!-- TAB HISTORIAL -->
             <div id="tab-historial" class="tab-content">
                 <div class="filters-section">
                     <div class="section-title">🔍 Filtros</div>
                     <div class="filters-grid">
-                        <div class="form-group">
-                            <label>Desde</label>
-                            <input type="date" id="filtroFechaDesde">
+                        <div class="form-group"><label>Desde</label><input type="date" id="filtroFechaDesde"></div>
+                        <div class="form-group"><label>Hasta</label><input type="date" id="filtroFechaHasta"></div>
+                        <div class="form-group"><label>Inspector</label><select id="filtroInspector"><option value="">Todos</option></select></div>
+                        <div class="form-group"><label>Máquina</label><input type="text" id="filtroMaquina" placeholder="Ej: I-35"></div>
+                        <div class="form-group"><label>Turno</label>
+                            <select id="filtroTurno"><option value="">Todos</option><option value="DIA">DÍA</option><option value="NOCHE">NOCHE</option></select>
                         </div>
-                        <div class="form-group">
-                            <label>Hasta</label>
-                            <input type="date" id="filtroFechaHasta">
-                        </div>
-                        <div class="form-group">
-                            <label>Inspector</label>
-                            <select id="filtroInspector"><option value="">Todos</option></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Máquina</label>
-                            <input type="text" id="filtroMaquina" placeholder="Ej: I-35">
-                        </div>
-                        <div class="form-group">
-                            <label>Turno</label>
-                            <select id="filtroTurno">
-                                <option value="">Todos</option>
-                                <option value="DIA">DÍA</option>
-                                <option value="NOCHE">NOCHE</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Resultado</label>
-                            <select id="filtroResultado">
-                                <option value="">Todos</option>
-                                <option value="CONFORME">CONFORME</option>
-                                <option value="NO CONFORME">NO CONFORME</option>
-                            </select>
+                        <div class="form-group"><label>Resultado</label>
+                            <select id="filtroResultado"><option value="">Todos</option><option value="CONFORME">CONFORME</option><option value="NO CONFORME">NO CONFORME</option></select>
                         </div>
                     </div>
                     <div class="btn-group" style="margin-top: 12px;">
@@ -1006,118 +469,69 @@
                         <button class="btn btn-secondary" onclick="limpiarFiltros()">🔄 Limpiar</button>
                     </div>
                 </div>
-
                 <div class="btn-group" style="margin-bottom: 16px;">
                     <button class="btn btn-primary" onclick="cargarHistorial()">🔄 Actualizar Datos</button>
                     <button class="btn btn-success" onclick="exportarExcel()">📥 Exportar Excel</button>
                 </div>
-
-                <div id="loadingHistorial" class="loading" style="display: none;">
-                    <div class="spinner"></div>
-                    <span>Cargando datos...</span>
-                </div>
-
+                <div id="loadingHistorial" class="loading" style="display: none;"><div class="spinner"></div><span>Cargando datos...</span></div>
                 <div class="table-container">
                     <table id="tablaHistorial">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Turno</th>
-                                <th>Máquina</th>
-                                <th>Producto</th>
-                                <th>% Hallado</th>
-                                <th>Resultado</th>
-                                <th>Inspector</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Fecha</th><th>Turno</th><th>Máquina</th><th>Producto</th><th>% Hallado</th><th>Resultado</th><th>Inspector</th></tr></thead>
                         <tbody id="cuerpoTabla"></tbody>
                     </table>
                 </div>
-
                 <div id="emptyState" class="empty-state" style="display: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <h3>No hay inspecciones registradas</h3>
                     <p>Las inspecciones aparecerán aquí una vez que guardes tu primera inspección</p>
                 </div>
             </div>
 
-            <!-- ============================== TAB: ESTADÍSTICAS ============================== -->
+            <!-- TAB ESTADÍSTICAS -->
             <div id="tab-estadisticas" class="tab-content">
                 <div class="stats-grid" id="statsContainer"></div>
-                <div class="chart-container">
-                    <div class="chart-title">👤 Distribución de Inspecciones por Inspector</div>
-                    <div class="chart-wrapper"><canvas id="chartInspectorPie"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-title">👥 Inspecciones por Inspector</div>
-                    <div class="chart-wrapper"><canvas id="chartInspectorBar"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-title">✅ Conformes vs No Conformes</div>
-                    <div class="chart-wrapper"><canvas id="chartResultados"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-title">🏭 No Conformes por Máquina</div>
-                    <div class="chart-wrapper"><canvas id="chartMaquinas"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-title">🌙 Inspecciones por Turno</div>
-                    <div class="chart-wrapper"><canvas id="chartTurnos"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-title">⚠️ Distribución de Tipos de Defecto</div>
-                    <div class="chart-wrapper"><canvas id="chartDefectos"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-title">📈 Tendencia de Conformidad por Mes</div>
-                    <div class="chart-wrapper"><canvas id="chartTendencia"></canvas></div>
-                </div>
-                <div class="section-card">
-                    <div class="section-title">🏆 Ranking: Máquinas con Más No Conformes</div>
-                    <div id="rankingMaquinas"></div>
-                </div>
+                <div class="chart-container"><div class="chart-title">👤 Distribución de Inspecciones por Inspector</div><div class="chart-wrapper"><canvas id="chartInspectorPie"></canvas></div></div>
+                <div class="chart-container"><div class="chart-title">👥 Inspecciones por Inspector</div><div class="chart-wrapper"><canvas id="chartInspectorBar"></canvas></div></div>
+                <div class="chart-container"><div class="chart-title">✅ Conformes vs No Conformes</div><div class="chart-wrapper"><canvas id="chartResultados"></canvas></div></div>
+                <div class="chart-container"><div class="chart-title">🏭 No Conformes por Máquina</div><div class="chart-wrapper"><canvas id="chartMaquinas"></canvas></div></div>
+                <div class="chart-container"><div class="chart-title">🌙 Inspecciones por Turno</div><div class="chart-wrapper"><canvas id="chartTurnos"></canvas></div></div>
+                <div class="chart-container"><div class="chart-title">⚠️ Distribución de Tipos de Defecto</div><div class="chart-wrapper"><canvas id="chartDefectos"></canvas></div></div>
+                <div class="chart-container"><div class="chart-title">📈 Tendencia de Conformidad por Mes</div><div class="chart-wrapper"><canvas id="chartTendencia"></canvas></div></div>
+                <div class="section-card"><div class="section-title">🏆 Ranking: Máquinas con Más No Conformes</div><div id="rankingMaquinas"></div></div>
             </div>
-
         </div>
     </div>
 
-    <!-- ⭐ MODAL RECIENTES (MEJORADO CON INSPECTORES Y MÁQUINAS) -->
+    <!-- MODAL RECIENTES -->
     <div id="modalRecientes" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitle">📋 Inspecciones Recientes</h3>
+                <h3 id="modalTitle">📋 Selecciona Inspector</h3>
                 <button class="modal-close" onclick="cerrarRecientes()">✕</button>
             </div>
             <div class="modal-body" id="recientesBody">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <span>Cargando...</span>
-                </div>
+                <div class="loading"><div class="spinner"></div><span>Cargando...</span></div>
             </div>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-uW-q5FhbKKbEWePfgsnpaybC1-fOtOIvvesTno-RohVb0hLamWMQkeZS0xiM_nfa/exec';  // ⚠️ REEMPLAZA ESTO CON TU URL
+        // ⚠️ REEMPLAZA ESTO CON TU URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwATiqKeEyfkXfQMrmlnAnHHHgme2kRRUTtI9VX5Tr20_-By-yy8iIjmXE74N_w2OkY/exec';
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
         let inspeccionesFiltradas = [];
         let charts = {};
         let fotoBase64 = null;
-        let ultimaBusqueda = '';
         let timeoutBusqueda = null;
-        let inspectorSeleccionado = null;  // ⭐ NUEVO
+        let inspectorSeleccionado = null;
 
         document.getElementById('fechaInspeccion').valueAsDate = new Date();
 
         // ============================================================
-        // ⭐ TABLAS DE MUESTREO (ISO 2859-1 / MIL-STD-105E)
+        // TABLAS ISO 2859-1
         // ============================================================
-
-        // TABLA 1: Letras código del tamaño de muestra (Nivel II)
         const TABLA_1_NIVEL_II = [
             { min: 2, max: 8, letra: 'A' },
             { min: 9, max: 15, letra: 'B' },
@@ -1135,184 +549,67 @@
             { min: 150001, max: 500000, letra: 'P' },
             { min: 500001, max: Infinity, letra: 'Q' }
         ];
+        const TABLA_2A = { 'A':2,'B':3,'C':5,'D':8,'E':13,'F':20,'G':32,'H':50,'J':80,'K':125,'L':200,'M':315,'N':500,'P':800,'Q':1250,'R':2000 };
 
-        // TABLA 2-A: Tamaño de muestra según letra código
-        const TABLA_2A_TAMAÑO_MUESTRA = {
-            'A': 2,
-            'B': 3,
-            'C': 5,
-            'D': 8,
-            'E': 13,
-            'F': 20,
-            'G': 32,
-            'H': 50,
-            'J': 80,
-            'K': 125,
-            'L': 200,
-            'M': 315,
-            'N': 500,
-            'P': 800,
-            'Q': 1250,
-            'R': 2000
-        };
-
-        // ============================================================
-        // ⭐ CALCULAR TAMAÑO DE MUESTRA AUTOMÁTICAMENTE
-        // ============================================================
         function calcularTamañoMuestra() {
             const total = parseFloat(document.getElementById('totalUnidades').value) || 0;
-            const campoMuestra = document.getElementById('unidadesMuestreadas');
-            
-            if (total === 0) {
-                campoMuestra.value = '';
-                return;
+            const campo = document.getElementById('unidadesMuestreadas');
+            if (total === 0) { campo.value = ''; return; }
+            let letra = '';
+            for (const r of TABLA_1_NIVEL_II) {
+                if (total >= r.min && total <= r.max) { letra = r.letra; break; }
             }
-            
-            // 1. Obtener letra código según Tabla 1 (Nivel II)
-            let letraCodigo = '';
-            for (const rango of TABLA_1_NIVEL_II) {
-                if (total >= rango.min && total <= rango.max) {
-                    letraCodigo = rango.letra;
-                    break;
-                }
-            }
-            
-            // 2. Obtener tamaño de muestra según Tabla 2-A
-            const tamañoMuestra = TABLA_2A_TAMAÑO_MUESTRA[letraCodigo] || 0;
-            
-            // 3. Asignar valor calculado
-            campoMuestra.value = tamañoMuestra;
-            
-            // 4. Recalcular porcentaje hallado
+            campo.value = TABLA_2A[letra] || 0;
             calcularPorcentajeHallado();
         }
 
         // ============================================================
-        // BÚSQUEDA RÁPIDA POR MÁQUINA
+        // BÚSQUEDA RÁPIDA
         // ============================================================
         function buscarUltimaInspeccion() {
-            const input = document.getElementById('busquedaMaquina');
-            const maquina = input.value.trim().toUpperCase();
-            const suggestionCard = document.getElementById('suggestionCard');
-
+            const maquina = document.getElementById('busquedaMaquina').value.trim().toUpperCase();
+            const card = document.getElementById('suggestionCard');
             if (timeoutBusqueda) clearTimeout(timeoutBusqueda);
-
-            if (maquina.length < 2) {
-                suggestionCard.style.display = 'none';
-                return;
-            }
-
+            if (maquina.length < 2) { card.style.display = 'none'; return; }
             timeoutBusqueda = setTimeout(async () => {
                 try {
-                    suggestionCard.innerHTML = '<div class="loading"><div class="spinner"></div><span>Buscando...</span></div>';
-                    suggestionCard.style.display = 'block';
-
-                    const response = await fetch(`${SCRIPT_URL}?action=ultimaInspeccion&maquina=${encodeURIComponent(maquina)}`);
-                    const data = await response.json();
-
+                    card.innerHTML = '<div class="loading"><div class="spinner"></div><span>Buscando...</span></div>';
+                    card.style.display = 'block';
+                    const res = await fetch(`${SCRIPT_URL}?action=ultimaInspeccion&maquina=${encodeURIComponent(maquina)}`);
+                    const data = await res.json();
                     if (data && data.encontrada) {
                         mostrarSugerencia(data.inspeccion);
                     } else {
-                        suggestionCard.innerHTML = `
-                            <div class="suggestion-card">
-                                <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
-                                    <div style="font-size: 36px; margin-bottom: 8px;">🔍</div>
-                                    <div style="font-weight: 600; margin-bottom: 4px;">No se encontró inspección reciente</div>
-                                    <div style="font-size: 13px;">Puedes empezar una nueva inspección para ${maquina}</div>
-                                </div>
-                            </div>
-                        `;
+                        card.innerHTML = `<div class="suggestion-card"><div style="text-align:center;padding:20px;color:var(--text-secondary)"><div style="font-size:36px;margin-bottom:8px">🔍</div><div style="font-weight:600;margin-bottom:4px">No se encontró inspección reciente</div><div style="font-size:13px">Puedes empezar una nueva para ${maquina}</div></div></div>`;
                     }
-                } catch (error) {
-                    console.error('Error al buscar:', error);
-                    suggestionCard.innerHTML = `
-                        <div class="suggestion-card">
-                            <div style="text-align: center; padding: 20px; color: var(--danger);">
-                                <div style="font-size: 36px; margin-bottom: 8px;">⚠️</div>
-                                <div style="font-weight: 600;">Error al buscar</div>
-                                <div style="font-size: 13px; margin-top: 4px;">Verifica tu conexión</div>
-                            </div>
-                        </div>
-                    `;
+                } catch(err) {
+                    card.innerHTML = `<div class="suggestion-card"><div style="text-align:center;padding:20px;color:var(--danger)"><div style="font-size:36px;margin-bottom:8px">⚠️</div><div style="font-weight:600">Error al buscar</div></div></div>`;
                 }
             }, 500);
         }
 
         function mostrarSugerencia(insp) {
-            const tiempoTranscurrido = calcularTiempoTranscurrido(insp['Timestamp']);
-            const suggestionCard = document.getElementById('suggestionCard');
-            
-            suggestionCard.innerHTML = `
+            const card = document.getElementById('suggestionCard');
+            const tiempo = calcularTiempoTranscurrido(insp['Timestamp']);
+            card.innerHTML = `
                 <div class="suggestion-card">
-                    <div class="suggestion-header">
-                        ⏰ Última inspección: ${tiempoTranscurrido}
+                    <div class="suggestion-header">⏰ Última inspección: ${tiempo}
                         ${insp['Inspector'] ? `<span class="recent-badge">${insp['Inspector']}</span>` : ''}
                     </div>
-                    <div class="suggestion-info">
-                        <strong>Producto:</strong> ${insp['Producto'] || 'N/A'}
-                    </div>
-                    <div class="suggestion-info">
-                        <strong>OP:</strong> ${insp['Orden de Produccion'] || 'N/A'}
-                    </div>
-                    <div class="suggestion-info">
-                        <strong>Resultado:</strong> 
-                        <span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">
-                            ${insp['Resultado'] || 'N/A'}
-                        </span>
+                    <div class="suggestion-info"><strong>Producto:</strong> ${insp['Producto'] || 'N/A'}</div>
+                    <div class="suggestion-info"><strong>OP:</strong> ${insp['Orden de Produccion'] || 'N/A'}</div>
+                    <div class="suggestion-info"><strong>Resultado:</strong>
+                        <span class="badge ${insp['Resultado']==='CONFORME'?'badge-success':'badge-danger'}">${insp['Resultado']||'N/A'}</span>
                     </div>
                     <div class="suggestion-buttons">
-                        <button type="button" class="btn btn-primary" onclick='cargarDatosInspeccion(${JSON.stringify(insp).replace(/'/g, "&apos;")})'>
-                            ✅ Usar estos datos
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="ignorarSugerencia()">
-                            ❌ Ignorar
-                        </button>
+                        <button type="button" class="btn btn-primary" onclick='cargarDatosInspeccion(${JSON.stringify(insp).replace(/'/g,"&apos;")})'>✅ Usar estos datos</button>
+                        <button type="button" class="btn btn-secondary" onclick="ignorarSugerencia()">❌ Ignorar</button>
                     </div>
-                </div>
-            `;
-            suggestionCard.style.display = 'block';
+                </div>`;
+            card.style.display = 'block';
         }
 
-        // ============================================================
-        // ⭐ NUEVO: CARGAR DATOS DE INSPECCIÓN (CAMPOS SELECTIVOS)
-        // ============================================================
-        function cargarDatosInspeccion(insp) {
-            // ✅ AUTO-RELLENAR CAMPOS FIJOS
-            setSelectValue('inspector', insp['Inspector']);
-            setSelectValue('turnoInspeccion', insp['Turno de Inspeccion']);
-            document.getElementById('numMaquina').value = insp['N° de Maquina'] || '';
-            document.getElementById('producto').value = insp['Producto'] || '';
-            document.getElementById('ordenProduccion').value = insp['Orden de Produccion'] || '';
-            document.getElementById('cantidadProducir').value = insp['Cantidad a Producir'] || '';
-            
-            setSelectValue('coordinadorCalidad', insp['Coordinador Calidad de turno']);
-            setSelectValue('coordinadorProduccion', insp['Coordinador de produccion de turno']);
-            
-            document.getElementById('operario1').value = insp['Operario1'] || '';
-            setSelectValue('turnoOperario1', insp['Turno operario 1']);
-            document.getElementById('operario2').value = insp['Operario2'] || '';
-            setSelectValue('turnoOperario2', insp['Turno operario 2']);
-
-            // ❌ NO RELLENAR (quedan en blanco para completar manualmente)
-            // - Cajas
-            // - Resultado
-            // - Defectos
-            // - Observaciones
-
-            // Cerrar modal y limpiar búsqueda
-            cerrarRecientes();
-            document.getElementById('suggestionCard').style.display = 'none';
-            document.getElementById('busquedaMaquina').value = '';
-
-            // Scroll suave al formulario
-            document.querySelector('.section-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-            mostrarAlerta('✅ Datos cargados. Completa cajas, resultado y guarda.', 'success');
-        }
-
-        function ignorarSugerencia() {
-            document.getElementById('suggestionCard').style.display = 'none';
-        }
+        function ignorarSugerencia() { document.getElementById('suggestionCard').style.display = 'none'; }
 
         function empezarEnBlanco() {
             limpiarFormulario();
@@ -1321,140 +618,160 @@
             mostrarAlerta('📝 Formulario limpio listo para nueva inspección', 'info');
         }
 
+        // ============================================================
+        // ⭐ CARGAR DATOS DE INSPECCIÓN
+        // ============================================================
+        function cargarDatosInspeccion(insp) {
+            // Campos que SÍ se auto-rellenan
+            setSelectValue('inspector', insp['Inspector']);
+            setSelectValue('turnoInspeccion', insp['Turno de Inspeccion']);
+            document.getElementById('numMaquina').value = insp['N° de Maquina'] || '';
+            document.getElementById('producto').value = insp['Producto'] || '';
+            document.getElementById('ordenProduccion').value = insp['Orden de Produccion'] || '';
+            document.getElementById('cantidadProducir').value = insp['Cantidad a Producir'] || '';
+            setSelectValue('coordinadorCalidad', insp['Coordinador Calidad de turno']);
+            setSelectValue('coordinadorProduccion', insp['Coordinador de produccion de turno']);
+            document.getElementById('operario1').value = insp['Operario1'] || '';
+            setSelectValue('turnoOperario1', insp['Turno operario 1']);
+            document.getElementById('operario2').value = insp['Operario2'] || '';
+            setSelectValue('turnoOperario2', insp['Turno operario 2']);
+
+            // Campos que NO se rellenan (completa el usuario)
+            // cajas, resultado, defectos, observaciones
+
+            cerrarRecientes();
+            document.getElementById('suggestionCard').style.display = 'none';
+            document.getElementById('busquedaMaquina').value = '';
+            document.querySelector('.section-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            mostrarAlerta('✅ Datos cargados. Completa cajas, resultado y guarda.', 'success');
+        }
+
         function setSelectValue(id, value) {
-            const select = document.getElementById(id);
-            if (!select || !value) return;
-            
-            const option = Array.from(select.options).find(opt => opt.value === value);
-            if (option) {
-                select.value = value;
-                // Disparar evento change para activar "Otros" si es necesario
-                select.dispatchEvent(new Event('change'));
-            }
+            const sel = document.getElementById(id);
+            if (!sel || !value) return;
+            const opt = Array.from(sel.options).find(o => o.value === value);
+            if (opt) { sel.value = value; sel.dispatchEvent(new Event('change')); }
         }
 
         // ============================================================
-        // ⭐ NUEVO: MODAL RECIENTES MEJORADO (INSPECTORES → MÁQUINAS)
+        // ⭐ MODAL RECIENTES - INSPECTORES → MÁQUINAS (CORREGIDO)
         // ============================================================
         async function abrirRecientes() {
             const modal = document.getElementById('modalRecientes');
             const body = document.getElementById('recientesBody');
             const title = document.getElementById('modalTitle');
-            
+
             inspectorSeleccionado = null;
-            
             modal.classList.add('active');
-            title.textContent = '📋 Selecciona Inspector';
+            title.textContent = '👤 Selecciona Inspector';
             body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspectores...</span></div>';
 
             try {
-                const response = await fetch(`${SCRIPT_URL}?action=inspectores`);
-                const data = await response.json();
+                const res = await fetch(`${SCRIPT_URL}?action=inspectores`);
+                const data = await res.json();
 
-                if (data && data.length > 0) {
+                if (Array.isArray(data) && data.length > 0) {
                     body.innerHTML = data.map(insp => `
-                        <div class="inspector-item" onclick='seleccionarInspector("${insp.nombre.replace(/'/g, "\\'")})")'>
+                        <div class="inspector-item" onclick="seleccionarInspector('${insp.nombre.replace(/'/g, "\\'")}')">
                             <div class="inspector-name">
                                 <span>👤</span>
                                 <span>${insp.nombre}</span>
                             </div>
-                            <div class="inspector-count">${insp.cantidad}</div>
+                            <div class="inspector-badge">${insp.cantidad} insp.</div>
                         </div>
                     `).join('');
                 } else {
                     body.innerHTML = `
                         <div class="empty-recents">
                             <div class="empty-recents-icon">👤</div>
-                            <div style="font-weight: 600; margin-bottom: 4px;">No hay inspectores recientes</div>
-                            <div style="font-size: 13px;">Las inspecciones de las últimas 6 horas aparecerán aquí</div>
-                        </div>
-                    `;
+                            <div style="font-weight:600;margin-bottom:4px">No hay inspectores recientes</div>
+                            <div style="font-size:13px">Las inspecciones de las últimas 6 horas aparecerán aquí</div>
+                        </div>`;
                 }
-            } catch (error) {
-                console.error('Error al cargar inspectores:', error);
+            } catch(err) {
                 body.innerHTML = `
                     <div class="empty-recents">
                         <div class="empty-recents-icon">⚠️</div>
-                        <div style="font-weight: 600; margin-bottom: 4px; color: var(--danger);">Error al cargar</div>
-                        <div style="font-size: 13px;">Verifica tu conexión e intenta de nuevo</div>
-                    </div>
-                `;
+                        <div style="font-weight:600;color:var(--danger)">Error al cargar</div>
+                        <div style="font-size:13px">Verifica tu conexión</div>
+                    </div>`;
             }
         }
 
+        // ⭐ FUNCIÓN CORREGIDA: usa encodeURIComponent y compara correctamente
         async function seleccionarInspector(inspector) {
             const body = document.getElementById('recientesBody');
             const title = document.getElementById('modalTitle');
-            
+
             inspectorSeleccionado = inspector;
-            
             title.textContent = `🏭 Máquinas de ${inspector}`;
-            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando máquinas...</span></div>';
+            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Buscando máquinas...</span></div>';
 
             try {
-                const response = await fetch(`${SCRIPT_URL}?action=maquinasPorInspector&inspector=${encodeURIComponent(inspector)}`);
-                const data = await response.json();
+                // ⭐ Codificación correcta del nombre del inspector
+                const url = `${SCRIPT_URL}?action=maquinasPorInspector&inspector=${encodeURIComponent(inspector)}`;
+                const res = await fetch(url);
+                const text = await res.text(); // Primero texto para debug
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch(parseErr) {
+                    throw new Error('Respuesta inválida del servidor');
+                }
 
-                if (data && data.length > 0) {
+                if (data.error) throw new Error(data.error);
+
+                if (Array.isArray(data) && data.length > 0) {
                     body.innerHTML = `
-                        <button class="back-button" onclick="abrirRecientes()">
-                            ← Volver a inspectores
-                        </button>
+                        <button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>
                         ${data.map(maq => {
                             const tiempo = calcularTiempoTranscurrido(maq.timestamp);
+                            // ⭐ Codificación correcta al pasar parámetros al onclick
                             return `
-                                <div class="maquina-item" onclick='cargarInspeccionPorInspectorMaquina("${inspector.replace(/'/g, "\\'")}","${maq.maquina}")'>
+                                <div class="maquina-item" onclick="cargarInspeccionPorInspectorMaquina(${JSON.stringify(inspector)}, ${JSON.stringify(maq.maquina)})">
                                     <div class="maquina-nombre">🏭 ${maq.maquina}</div>
                                     <div class="maquina-tiempo">⏰ ${tiempo}</div>
-                                </div>
-                            `;
-                        }).join('')}
-                    `;
+                                </div>`;
+                        }).join('')}`;
                 } else {
                     body.innerHTML = `
-                        <button class="back-button" onclick="abrirRecientes()">
-                            ← Volver a inspectores
-                        </button>
+                        <button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>
                         <div class="empty-recents">
                             <div class="empty-recents-icon">🏭</div>
-                            <div style="font-weight: 600; margin-bottom: 4px;">No hay máquinas registradas</div>
-                            <div style="font-size: 13px;">Este inspector no tiene inspecciones recientes</div>
-                        </div>
-                    `;
+                            <div style="font-weight:600;margin-bottom:4px">No hay máquinas recientes</div>
+                            <div style="font-size:13px">Este inspector no tiene inspecciones en las últimas 6 horas</div>
+                        </div>`;
                 }
-            } catch (error) {
-                console.error('Error al cargar máquinas:', error);
+            } catch(err) {
                 body.innerHTML = `
-                    <button class="back-button" onclick="abrirRecientes()">
-                        ← Volver a inspectores
-                    </button>
+                    <button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>
                     <div class="empty-recents">
                         <div class="empty-recents-icon">⚠️</div>
-                        <div style="font-weight: 600; margin-bottom: 4px; color: var(--danger);">Error al cargar</div>
-                        <div style="font-size: 13px;">Verifica tu conexión e intenta de nuevo</div>
-                    </div>
-                `;
+                        <div style="font-weight:600;color:var(--danger)">Error: ${err.message}</div>
+                        <div style="font-size:13px">Verifica tu conexión e intenta de nuevo</div>
+                    </div>`;
             }
         }
 
+        // ⭐ FUNCIÓN CORREGIDA: parámetros como strings JSON
         async function cargarInspeccionPorInspectorMaquina(inspector, maquina) {
             const body = document.getElementById('recientesBody');
-            
             body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspección...</span></div>';
 
             try {
-                const response = await fetch(`${SCRIPT_URL}?action=ultimaInspeccionInspectorMaquina&inspector=${encodeURIComponent(inspector)}&maquina=${encodeURIComponent(maquina)}`);
-                const data = await response.json();
+                const url = `${SCRIPT_URL}?action=ultimaInspeccionInspectorMaquina&inspector=${encodeURIComponent(inspector)}&maquina=${encodeURIComponent(maquina)}`;
+                const res = await fetch(url);
+                const data = await res.json();
 
                 if (data && data.encontrada) {
                     cargarDatosInspeccion(data.inspeccion);
                 } else {
-                    mostrarAlerta('⚠️ No se encontró inspección reciente', 'error');
+                    mostrarAlerta('⚠️ No se encontró inspección reciente para esta combinación', 'error');
                     cerrarRecientes();
                 }
-            } catch (error) {
-                console.error('Error al cargar inspección:', error);
-                mostrarAlerta('❌ Error al cargar inspección', 'error');
+            } catch(err) {
+                mostrarAlerta('❌ Error al cargar la inspección: ' + err.message, 'error');
                 cerrarRecientes();
             }
         }
@@ -1465,25 +782,18 @@
         }
 
         document.getElementById('modalRecientes').addEventListener('click', function(e) {
-            if (e.target === this) {
-                cerrarRecientes();
-            }
+            if (e.target === this) cerrarRecientes();
         });
 
         function calcularTiempoTranscurrido(timestamp) {
             if (!timestamp) return 'Hace un momento';
-            
-            const ahora = new Date();
-            const fecha = new Date(timestamp);
-            const diff = Math.abs(ahora - fecha);
-            
-            const minutos = Math.floor(diff / 60000);
-            const horas = Math.floor(minutos / 60);
-            const dias = Math.floor(horas / 24);
-            
+            const diff = Math.abs(new Date() - new Date(timestamp));
+            const min = Math.floor(diff / 60000);
+            const hrs = Math.floor(min / 60);
+            const dias = Math.floor(hrs / 24);
             if (dias > 0) return `Hace ${dias} día${dias > 1 ? 's' : ''}`;
-            if (horas > 0) return `Hace ${horas} hora${horas > 1 ? 's' : ''}`;
-            if (minutos > 0) return `Hace ${minutos} minuto${minutos > 1 ? 's' : ''}`;
+            if (hrs > 0) return `Hace ${hrs} hora${hrs > 1 ? 's' : ''}`;
+            if (min > 0) return `Hace ${min} minuto${min > 1 ? 's' : ''}`;
             return 'Hace un momento';
         }
 
@@ -1491,60 +801,36 @@
         // CAMPO "OTROS"
         // ============================================================
         function toggleOtros(campo) {
-            const select = document.getElementById(campo);
-            const contenedor = document.getElementById('otros-' + campo);
-            const inputManual = document.getElementById(campo + '-manual');
-
-            if (select.value === 'Otros') {
-                contenedor.classList.add('visible');
-                inputManual.required = true;
-                inputManual.focus();
-            } else {
-                contenedor.classList.remove('visible');
-                inputManual.required = false;
-                inputManual.value = '';
-            }
+            const sel = document.getElementById(campo);
+            const cont = document.getElementById('otros-' + campo);
+            const inp = document.getElementById(campo + '-manual');
+            if (sel.value === 'Otros') { cont.classList.add('visible'); inp.required = true; inp.focus(); }
+            else { cont.classList.remove('visible'); inp.required = false; inp.value = ''; }
         }
 
         function getValor(campo) {
-            const select = document.getElementById(campo);
-            if (select.value === 'Otros') {
-                const manual = document.getElementById(campo + '-manual');
-                return manual.value.trim() || '';
-            }
-            return select.value;
+            const sel = document.getElementById(campo);
+            if (sel.value === 'Otros') return document.getElementById(campo + '-manual').value.trim() || '';
+            return sel.value;
         }
 
         // ============================================================
-        // INDICADOR % HALLADO EN TIEMPO REAL
+        // CÁLCULOS
         // ============================================================
         function calcularPorcentajeHallado() {
             const muestreadas = parseFloat(document.getElementById('unidadesMuestreadas').value) || 0;
             const defectuosas = parseFloat(document.getElementById('unidadesDefectuosas').value) || 0;
-            const indicador = document.getElementById('indicadorPorcentaje');
-            
+            const ind = document.getElementById('indicadorPorcentaje');
             if (defectuosas > 0 && muestreadas > 0) {
                 const pct = (defectuosas / muestreadas) * 100;
-                indicador.style.display = 'block';
-                if (pct < 2) {
-                    indicador.style.background = '#10b981';
-                    indicador.textContent = `🟢 ${pct.toFixed(2)}% HALLADO`;
-                } else if (pct <= 5) {
-                    indicador.style.background = '#f59e0b';
-                    indicador.textContent = `🟡 ${pct.toFixed(2)}% HALLADO`;
-                } else {
-                    indicador.style.background = '#ef4444';
-                    indicador.textContent = `🔴 ${pct.toFixed(2)}% HALLADO`;
-                }
-                indicador.style.color = 'white';
-            } else {
-                indicador.style.display = 'none';
-            }
+                ind.style.display = 'block';
+                ind.style.color = 'white';
+                if (pct < 2) { ind.style.background = '#10b981'; ind.textContent = `🟢 ${pct.toFixed(2)}% HALLADO`; }
+                else if (pct <= 5) { ind.style.background = '#f59e0b'; ind.textContent = `🟡 ${pct.toFixed(2)}% HALLADO`; }
+                else { ind.style.background = '#ef4444'; ind.textContent = `🔴 ${pct.toFixed(2)}% HALLADO`; }
+            } else { ind.style.display = 'none'; }
         }
 
-        // ============================================================
-        // ⭐ CALCULAR TOTAL DE UNIDADES (ACTUALIZADO)
-        // ============================================================
         function calcularTotal() {
             let total = 0;
             const cc = parseFloat(document.getElementById('cajasCompletas').value) || 0;
@@ -1552,31 +838,24 @@
             const sub = cc * uc;
             document.getElementById('subtotalCompletas').value = sub;
             total += sub;
-            
             for (let i = 1; i <= 5; i++) {
                 const ci = document.getElementById(`cajasSaldo${i}`);
                 const ui = document.getElementById(`unidadesCaja${i}`);
                 if (ci && ui) total += (parseFloat(ci.value) || 0) * (parseFloat(ui.value) || 0);
             }
-            
             document.getElementById('totalUnidades').value = total;
-            
-            // ⭐ CALCULAR AUTOMÁTICAMENTE EL TAMAÑO DE MUESTRA
             calcularTamañoMuestra();
         }
 
-        // ============================================================
-        // TOGGLE SECCIÓN NO CONFORME
-        // ============================================================
         function toggleCondicional() {
-            const resultado = document.getElementById('resultado').value;
-            const seccion = document.getElementById('seccionNoConforme');
-            if (resultado === 'NO CONFORME') {
-                seccion.classList.add('active');
+            const res = document.getElementById('resultado').value;
+            const sec = document.getElementById('seccionNoConforme');
+            if (res === 'NO CONFORME') {
+                sec.classList.add('active');
                 document.getElementById('tipoDefecto').required = true;
                 document.getElementById('problema').required = true;
             } else {
-                seccion.classList.remove('active');
+                sec.classList.remove('active');
                 document.getElementById('tipoDefecto').required = false;
                 document.getElementById('problema').required = false;
                 document.getElementById('tipoDefecto').value = '';
@@ -1593,7 +872,6 @@
             if (cajasSaldoCount >= 5) { mostrarAlerta('No puedes agregar más de 5 cajas saldo', 'error'); return; }
             cajasSaldoCount++;
             const n = cajasSaldoCount;
-            const container = document.getElementById('cajasSaldoContainer');
             const div = document.createElement('div');
             div.className = 'caja-item';
             div.id = `caja-saldo-${n}`;
@@ -1617,29 +895,20 @@
                         </select>
                     </div>
                 </div>`;
-            container.appendChild(div);
-
-            document.getElementById(`cajasSaldo${n}`).addEventListener('input', function() {
-                const c = parseFloat(this.value) || 0;
-                const u = parseFloat(document.getElementById(`unidadesCaja${n}`).value) || 0;
-                document.getElementById(`subtotalSaldo${n}`).value = c * u;
-                calcularTotal();
+            document.getElementById('cajasSaldoContainer').appendChild(div);
+            ['cajasSaldo', 'unidadesCaja'].forEach(pref => {
+                document.getElementById(`${pref}${n}`).addEventListener('input', function() {
+                    const c = parseFloat(document.getElementById(`cajasSaldo${n}`).value) || 0;
+                    const u = parseFloat(document.getElementById(`unidadesCaja${n}`).value) || 0;
+                    document.getElementById(`subtotalSaldo${n}`).value = c * u;
+                    calcularTotal();
+                });
             });
-            document.getElementById(`unidadesCaja${n}`).addEventListener('input', function() {
-                const c = parseFloat(document.getElementById(`cajasSaldo${n}`).value) || 0;
-                const u = parseFloat(this.value) || 0;
-                document.getElementById(`subtotalSaldo${n}`).value = c * u;
-                calcularTotal();
-            });
-
-            if (cajasSaldoCount >= 5) {
-                document.getElementById('btnAgregarCaja').disabled = true;
-                document.getElementById('btnAgregarCaja').style.opacity = '0.5';
-            }
+            if (cajasSaldoCount >= 5) { document.getElementById('btnAgregarCaja').disabled = true; document.getElementById('btnAgregarCaja').style.opacity = '0.5'; }
         }
 
-        function eliminarCajaSaldo(numero) {
-            const el = document.getElementById(`caja-saldo-${numero}`);
+        function eliminarCajaSaldo(n) {
+            const el = document.getElementById(`caja-saldo-${n}`);
             if (el) { el.remove(); cajasSaldoCount--; }
             document.getElementById('btnAgregarCaja').disabled = false;
             document.getElementById('btnAgregarCaja').style.opacity = '1';
@@ -1672,33 +941,27 @@
 
         function eliminarFoto() {
             fotoBase64 = null;
-            const prev = document.getElementById('previewFoto');
-            if (prev) { prev.style.display = 'none'; prev.src = ''; }
-            const ph = document.getElementById('fotoPlaceholder');
-            if (ph) ph.style.display = 'block';
-            const bot = document.getElementById('fotoBotones');
-            if (bot) bot.style.display = 'none';
-            const info = document.getElementById('fotoInfo');
-            if (info) info.style.display = 'none';
-            const input = document.getElementById('inputFoto');
-            if (input) input.value = '';
+            const ids = ['previewFoto', 'fotoPlaceholder', 'fotoBotones', 'fotoInfo'];
+            document.getElementById('previewFoto').style.display = 'none';
+            document.getElementById('previewFoto').src = '';
+            document.getElementById('fotoPlaceholder').style.display = 'block';
+            document.getElementById('fotoBotones').style.display = 'none';
+            document.getElementById('fotoInfo').style.display = 'none';
+            const inp = document.getElementById('inputFoto');
+            if (inp) inp.value = '';
             const cont = document.getElementById('fotoContainer');
-            if (cont) {
-                cont.style.borderColor = 'var(--border)';
-                cont.style.background = 'var(--bg)';
-                cont.onclick = () => document.getElementById('inputFoto').click();
-            }
+            if (cont) { cont.style.borderColor = 'var(--border)'; cont.style.background = 'var(--bg)'; cont.onclick = () => document.getElementById('inputFoto').click(); }
         }
 
         function manejarDrop(event) {
             event.preventDefault();
             const file = event.dataTransfer.files[0];
             if (file && file.type.startsWith('image/')) {
-                const input = document.getElementById('inputFoto');
+                const inp = document.getElementById('inputFoto');
                 const dt = new DataTransfer();
                 dt.items.add(file);
-                input.files = dt.files;
-                previsualizarFoto({ target: input });
+                inp.files = dt.files;
+                previsualizarFoto({ target: inp });
             }
             document.getElementById('fotoContainer').style.borderColor = 'var(--border)';
         }
@@ -1706,14 +969,14 @@
         // ============================================================
         // ALERTAS
         // ============================================================
-        function mostrarAlerta(mensaje, tipo = 'success') {
-            const container = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${tipo}`;
-            alert.innerHTML = `<span>${tipo === 'success' ? '✅' : tipo === 'error' ? '❌' : 'ℹ️'}</span><span>${mensaje}</span>`;
-            container.innerHTML = '';
-            container.appendChild(alert);
-            setTimeout(() => alert.remove(), 5000);
+        function mostrarAlerta(msg, tipo = 'success') {
+            const cont = document.getElementById('alertContainer');
+            const al = document.createElement('div');
+            al.className = `alert alert-${tipo}`;
+            al.innerHTML = `<span>${tipo==='success'?'✅':tipo==='error'?'❌':'ℹ️'}</span><span>${msg}</span>`;
+            cont.innerHTML = '';
+            cont.appendChild(al);
+            setTimeout(() => al.remove(), 5000);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1730,27 +993,21 @@
             ];
             for (const c of camposOtros) {
                 if (document.getElementById(c.id).value === 'Otros') {
-                    const manual = document.getElementById(c.id + '-manual');
-                    if (!manual.value.trim()) {
-                        mostrarAlerta(`⚠️ Por favor escribe el nombre en "${c.label}"`, 'error');
-                        manual.focus();
-                        return;
-                    }
+                    const m = document.getElementById(c.id + '-manual');
+                    if (!m.value.trim()) { mostrarAlerta(`⚠️ Por favor escribe el nombre en "${c.label}"`, 'error'); m.focus(); return; }
                 }
             }
 
             const btn = document.querySelector('button[type="submit"]');
-            const textoOrig = btn.innerHTML;
+            const orig = btn.innerHTML;
             btn.innerHTML = '<div class="spinner"></div> Guardando...';
             btn.disabled = true;
 
             try {
                 const cajasSaldo = {};
                 for (let i = 1; i <= 5; i++) {
-                    const ic = document.getElementById(`cajasSaldo${i}`);
-                    const iu = document.getElementById(`unidadesCaja${i}`);
-                    cajasSaldo[`cajasSaldo${i}`] = ic?.value || '';
-                    cajasSaldo[`unidadesCaja${i}`] = iu?.value || '';
+                    cajasSaldo[`cajasSaldo${i}`] = document.getElementById(`cajasSaldo${i}`)?.value || '';
+                    cajasSaldo[`unidadesCaja${i}`] = document.getElementById(`unidadesCaja${i}`)?.value || '';
                     cajasSaldo[`fechaSaldo${i}`] = document.getElementById(`fechaSaldo${i}`)?.value || '';
                     cajasSaldo[`turnoSaldo${i}`] = document.getElementById(`turnoSaldo${i}`)?.value || '';
                 }
@@ -1786,20 +1043,17 @@
                 };
 
                 await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
+                    method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(inspeccion)
                 });
 
                 mostrarAlerta('✅ Inspección guardada exitosamente en Google Sheets', 'success');
                 limpiarFormulario();
-
-            } catch (error) {
-                console.error('Error:', error);
-                mostrarAlerta('❌ Error al guardar. Verifica tu conexión e intenta nuevamente.', 'error');
+            } catch(err) {
+                mostrarAlerta('❌ Error al guardar. Verifica tu conexión.', 'error');
             } finally {
-                btn.innerHTML = textoOrig;
+                btn.innerHTML = orig;
                 btn.disabled = false;
             }
         });
@@ -1819,10 +1073,10 @@
             document.getElementById('indicadorPorcentaje').style.display = 'none';
             document.getElementById('btnAgregarCaja').disabled = false;
             document.getElementById('btnAgregarCaja').style.opacity = '1';
-            ['inspector', 'coordinadorCalidad', 'coordinadorProduccion'].forEach(campo => {
-                const cont = document.getElementById('otros-' + campo);
+            ['inspector', 'coordinadorCalidad', 'coordinadorProduccion'].forEach(c => {
+                const cont = document.getElementById('otros-' + c);
                 if (cont) cont.classList.remove('visible');
-                const inp = document.getElementById(campo + '-manual');
+                const inp = document.getElementById(c + '-manual');
                 if (inp) { inp.value = ''; inp.required = false; }
             });
             eliminarFoto();
@@ -1831,13 +1085,13 @@
         // ============================================================
         // TABS
         // ============================================================
-        function showTab(tabName, el) {
+        function showTab(name, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('tab-' + name).classList.add('active');
             el.classList.add('active');
-            if (tabName === 'historial') cargarHistorial();
-            else if (tabName === 'estadisticas') cargarEstadisticas();
+            if (name === 'historial') cargarHistorial();
+            else if (name === 'estadisticas') cargarEstadisticas();
         }
 
         // ============================================================
@@ -1850,18 +1104,14 @@
             tbody.innerHTML = '';
             document.getElementById('emptyState').style.display = 'none';
             try {
-                const response = await fetch(SCRIPT_URL);
-                const data = await response.json();
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
                 inspecciones = data;
                 inspeccionesFiltradas = data;
                 poblarFiltros();
-                if (!inspecciones || inspecciones.length === 0) {
-                    document.getElementById('emptyState').style.display = 'block';
-                } else {
-                    mostrarTabla();
-                }
-            } catch (error) {
-                console.error('Error al cargar historial:', error);
+                if (!inspecciones || inspecciones.length === 0) document.getElementById('emptyState').style.display = 'block';
+                else mostrarTabla();
+            } catch(err) {
                 mostrarAlerta('Error al cargar el historial. Verifica tu conexión.', 'error');
             } finally {
                 loading.style.display = 'none';
@@ -1870,9 +1120,9 @@
 
         function poblarFiltros() {
             const sel = document.getElementById('filtroInspector');
-            const inspectores = [...new Set(inspecciones.map(i => i['Inspector']).filter(Boolean))];
+            const insp = [...new Set(inspecciones.map(i => i['Inspector']).filter(Boolean))];
             sel.innerHTML = '<option value="">Todos</option>';
-            inspectores.forEach(i => sel.innerHTML += `<option value="${i}">${i}</option>`);
+            insp.forEach(i => sel.innerHTML += `<option value="${i}">${i}</option>`);
         }
 
         function aplicarFiltros() {
@@ -1882,64 +1132,49 @@
             const maquina = document.getElementById('filtroMaquina').value.toUpperCase();
             const turno = document.getElementById('filtroTurno').value;
             const resultado = document.getElementById('filtroResultado').value;
-
-            inspeccionesFiltradas = inspecciones.filter(insp => {
+            inspeccionesFiltradas = inspecciones.filter(i => {
                 let ok = true;
-                if (desde && insp['Fecha de inspeccion']) ok = ok && new Date(insp['Fecha de inspeccion']) >= new Date(desde);
-                if (hasta && insp['Fecha de inspeccion']) ok = ok && new Date(insp['Fecha de inspeccion']) <= new Date(hasta);
-                if (inspector) ok = ok && insp['Inspector'] === inspector;
-                if (maquina) ok = ok && insp['N° de Maquina'] && insp['N° de Maquina'].toUpperCase().includes(maquina);
-                if (turno) ok = ok && insp['Turno de Inspeccion'] === turno;
-                if (resultado) ok = ok && insp['Resultado'] === resultado;
+                if (desde && i['Fecha de inspeccion']) ok = ok && new Date(i['Fecha de inspeccion']) >= new Date(desde);
+                if (hasta && i['Fecha de inspeccion']) ok = ok && new Date(i['Fecha de inspeccion']) <= new Date(hasta);
+                if (inspector) ok = ok && i['Inspector'] === inspector;
+                if (maquina) ok = ok && i['N° de Maquina'] && i['N° de Maquina'].toUpperCase().includes(maquina);
+                if (turno) ok = ok && i['Turno de Inspeccion'] === turno;
+                if (resultado) ok = ok && i['Resultado'] === resultado;
                 return ok;
             });
             mostrarTabla();
         }
 
         function limpiarFiltros() {
-            document.getElementById('filtroFechaDesde').value = '';
-            document.getElementById('filtroFechaHasta').value = '';
-            document.getElementById('filtroInspector').value = '';
-            document.getElementById('filtroMaquina').value = '';
-            document.getElementById('filtroTurno').value = '';
-            document.getElementById('filtroResultado').value = '';
+            ['filtroFechaDesde','filtroFechaHasta','filtroMaquina'].forEach(id => document.getElementById(id).value = '');
+            ['filtroInspector','filtroTurno','filtroResultado'].forEach(id => document.getElementById(id).value = '');
             inspeccionesFiltradas = inspecciones;
             mostrarTabla();
         }
 
         function mostrarTabla() {
             const tbody = document.getElementById('cuerpoTabla');
-            const emptyState = document.getElementById('emptyState');
-            if (inspeccionesFiltradas.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-            emptyState.style.display = 'none';
-            tbody.innerHTML = [...inspeccionesFiltradas].reverse().map(insp => {
-                const pct = insp['% Hallado'] ? (parseFloat(insp['% Hallado']) * 100).toFixed(2) + '%' : 'N/A';
+            if (inspeccionesFiltradas.length === 0) { tbody.innerHTML = ''; document.getElementById('emptyState').style.display = 'block'; return; }
+            document.getElementById('emptyState').style.display = 'none';
+            tbody.innerHTML = [...inspeccionesFiltradas].reverse().map(i => {
+                const pct = i['% Hallado'] ? (parseFloat(i['% Hallado']) * 100).toFixed(2) + '%' : 'N/A';
                 return `<tr>
-                    <td>${formatearFecha(insp['Fecha de inspeccion'])}</td>
-                    <td><span class="badge badge-info">${insp['Turno de Inspeccion'] || ''}</span></td>
-                    <td><strong>${insp['N° de Maquina'] || ''}</strong></td>
-                    <td>${insp['Producto'] || ''}</td>
+                    <td>${formatearFecha(i['Fecha de inspeccion'])}</td>
+                    <td><span class="badge badge-info">${i['Turno de Inspeccion']||''}</span></td>
+                    <td><strong>${i['N° de Maquina']||''}</strong></td>
+                    <td>${i['Producto']||''}</td>
                     <td><strong>${pct}</strong></td>
-                    <td><span class="badge ${insp['Resultado'] === 'CONFORME' ? 'badge-success' : 'badge-danger'}">${insp['Resultado'] || ''}</span></td>
-                    <td>${insp['Inspector'] || ''}</td>
+                    <td><span class="badge ${i['Resultado']==='CONFORME'?'badge-success':'badge-danger'}">${i['Resultado']||''}</span></td>
+                    <td>${i['Inspector']||''}</td>
                 </tr>`;
             }).join('');
         }
 
         function exportarExcel() {
-            if (!inspeccionesFiltradas || inspeccionesFiltradas.length === 0) {
-                mostrarAlerta('No hay datos para exportar', 'error');
-                return;
-            }
+            if (!inspeccionesFiltradas || inspeccionesFiltradas.length === 0) { mostrarAlerta('No hay datos para exportar', 'error'); return; }
             const headers = Object.keys(inspeccionesFiltradas[0]);
             let csv = headers.join(',') + '\n';
-            inspeccionesFiltradas.forEach(insp => {
-                csv += headers.map(h => `"${insp[h] || ''}"`).join(',') + '\n';
-            });
+            inspeccionesFiltradas.forEach(i => { csv += headers.map(h => `"${i[h]||''}"`).join(',') + '\n'; });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
             link.download = `Inspecciones_${new Date().toISOString().split('T')[0]}.csv`;
@@ -1952,7 +1187,6 @@
         // ============================================================
         async function cargarEstadisticas() {
             if (!inspecciones || inspecciones.length === 0) await cargarHistorial();
-
             const total = inspecciones.length;
             const conformes = inspecciones.filter(i => i['Resultado'] === 'CONFORME').length;
             const noConformes = inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').length;
@@ -1963,135 +1197,75 @@
                 <div class="stat-card"><h4>Total Inspecciones</h4><p>${total}</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,var(--success),#059669)"><h4>Conformes</h4><p>${conformes}</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,var(--danger),#dc2626)"><h4>No Conformes</h4><p>${noConformes}</p></div>
-                <div class="stat-card" style="background:linear-gradient(135deg,#06b6d4,#0891b2)"><h4>Tasa Conformidad</h4><p>${total > 0 ? ((conformes/total)*100).toFixed(1) : 0}%</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#06b6d4,#0891b2)"><h4>Tasa Conformidad</h4><p>${total>0?((conformes/total)*100).toFixed(1):0}%</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h4>Tarjetas Amarillas</h4><p>${tarjAm}</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,#dc3545,#bd2130)"><h4>Tarjetas Rojas</h4><p>${tarjRj}</p></div>`;
 
-            crearGraficoInspectorPie();
-            crearGraficoInspectorBar();
-            crearGraficoResultados();
-            crearGraficoMaquinas();
-            crearGraficoTurnos();
-            crearGraficoDefectos();
-            crearGraficoTendencia();
-            crearRankingMaquinas();
+            crearGraficoInspectorPie(); crearGraficoInspectorBar(); crearGraficoResultados();
+            crearGraficoMaquinas(); crearGraficoTurnos(); crearGraficoDefectos();
+            crearGraficoTendencia(); crearRankingMaquinas();
         }
 
         const COLORES = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#06b6d4','#8b5cf6','#ec4899','#14b8a6','#f97316','#84cc16','#a78bfa'];
-
         function agrupar(campo) {
-            return inspecciones.reduce((acc, i) => {
-                const k = i[campo] || 'Sin asignar';
-                acc[k] = (acc[k] || 0) + 1;
-                return acc;
-            }, {});
+            return inspecciones.reduce((acc, i) => { const k = i[campo]||'Sin asignar'; acc[k]=(acc[k]||0)+1; return acc; }, {});
+        }
+
+        function crearGrafico(id, tipo, labels, datasets, opciones = {}) {
+            const ctx = document.getElementById(id);
+            if (charts[id]) charts[id].destroy();
+            charts[id] = new Chart(ctx, { type: tipo, data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, ...opciones } });
         }
 
         function crearGraficoInspectorPie() {
-            const ctx = document.getElementById('chartInspectorPie');
-            if (charts.inspectorPie) charts.inspectorPie.destroy();
             const d = agrupar('Inspector');
-            charts.inspectorPie = new Chart(ctx, {
-                type: 'pie',
-                data: { labels: Object.keys(d), datasets: [{ data: Object.values(d), backgroundColor: COLORES }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-            });
+            crearGrafico('chartInspectorPie','pie',Object.keys(d),[{data:Object.values(d),backgroundColor:COLORES}],{plugins:{legend:{position:'bottom'}}});
         }
-
         function crearGraficoInspectorBar() {
-            const ctx = document.getElementById('chartInspectorBar');
-            if (charts.inspectorBar) charts.inspectorBar.destroy();
             const d = agrupar('Inspector');
-            charts.inspectorBar = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: Object.keys(d), datasets: [{ label: 'Inspecciones', data: Object.values(d), backgroundColor: '#667eea' }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
+            crearGrafico('chartInspectorBar','bar',Object.keys(d),[{label:'Inspecciones',data:Object.values(d),backgroundColor:'#667eea'}],{plugins:{legend:{display:false}}});
         }
-
         function crearGraficoResultados() {
-            const ctx = document.getElementById('chartResultados');
-            if (charts.resultados) charts.resultados.destroy();
-            const c = inspecciones.filter(i => i['Resultado'] === 'CONFORME').length;
-            const nc = inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').length;
-            charts.resultados = new Chart(ctx, {
-                type: 'doughnut',
-                data: { labels: ['Conformes', 'No Conformes'], datasets: [{ data: [c, nc], backgroundColor: ['#10b981', '#ef4444'] }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-            });
+            const c = inspecciones.filter(i=>i['Resultado']==='CONFORME').length;
+            const nc = inspecciones.filter(i=>i['Resultado']==='NO CONFORME').length;
+            crearGrafico('chartResultados','doughnut',['Conformes','No Conformes'],[{data:[c,nc],backgroundColor:['#10b981','#ef4444']}],{plugins:{legend:{position:'bottom'}}});
         }
-
         function crearGraficoMaquinas() {
-            const ctx = document.getElementById('chartMaquinas');
-            if (charts.maquinas) charts.maquinas.destroy();
             const d = {};
-            inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').forEach(i => {
-                const m = i['N° de Maquina'] || 'Sin asignar';
-                d[m] = (d[m] || 0) + 1;
-            });
-            const sorted = Object.entries(d).sort((a, b) => b[1] - a[1]).slice(0, 10);
-            charts.maquinas = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: sorted.map(x => x[0]), datasets: [{ label: 'No Conformes', data: sorted.map(x => x[1]), backgroundColor: '#ef4444' }] },
-                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } }
-            });
+            inspecciones.filter(i=>i['Resultado']==='NO CONFORME').forEach(i=>{const m=i['N° de Maquina']||'Sin asignar';d[m]=(d[m]||0)+1;});
+            const sorted = Object.entries(d).sort((a,b)=>b[1]-a[1]).slice(0,10);
+            crearGrafico('chartMaquinas','bar',sorted.map(x=>x[0]),[{label:'No Conformes',data:sorted.map(x=>x[1]),backgroundColor:'#ef4444'}],{indexAxis:'y',plugins:{legend:{display:false}}});
         }
-
         function crearGraficoTurnos() {
-            const ctx = document.getElementById('chartTurnos');
-            if (charts.turnos) charts.turnos.destroy();
             const d = agrupar('Turno de Inspeccion');
-            charts.turnos = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: Object.keys(d), datasets: [{ label: 'Inspecciones', data: Object.values(d), backgroundColor: ['#667eea', '#764ba2'] }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
+            crearGrafico('chartTurnos','bar',Object.keys(d),[{label:'Inspecciones',data:Object.values(d),backgroundColor:['#667eea','#764ba2']}],{plugins:{legend:{display:false}}});
         }
-
         function crearGraficoDefectos() {
-            const ctx = document.getElementById('chartDefectos');
-            if (charts.defectos) charts.defectos.destroy();
             const d = {};
-            inspecciones.filter(i => i['TIpo de defecto']).forEach(i => {
-                d[i['TIpo de defecto']] = (d[i['TIpo de defecto']] || 0) + 1;
-            });
-            charts.defectos = new Chart(ctx, {
-                type: 'pie',
-                data: { labels: Object.keys(d), datasets: [{ data: Object.values(d), backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#06b6d4'] }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-            });
+            inspecciones.filter(i=>i['TIpo de defecto']).forEach(i=>{d[i['TIpo de defecto']]=(d[i['TIpo de defecto']]||0)+1;});
+            crearGrafico('chartDefectos','pie',Object.keys(d),[{data:Object.values(d),backgroundColor:['#ef4444','#f59e0b','#10b981','#06b6d4']}],{plugins:{legend:{position:'bottom'}}});
         }
-
         function crearGraficoTendencia() {
-            const ctx = document.getElementById('chartTendencia');
-            if (charts.tendencia) charts.tendencia.destroy();
             const dm = {};
-            inspecciones.forEach(i => {
+            inspecciones.forEach(i=>{
                 if (!i['Fecha de inspeccion']) return;
-                const mes = new Date(i['Fecha de inspeccion']).toLocaleDateString('es', { month: 'short', year: 'numeric' });
-                if (!dm[mes]) dm[mes] = { total: 0, conformes: 0 };
+                const mes = new Date(i['Fecha de inspeccion']).toLocaleDateString('es',{month:'short',year:'numeric'});
+                if (!dm[mes]) dm[mes]={total:0,conformes:0};
                 dm[mes].total++;
-                if (i['Resultado'] === 'CONFORME') dm[mes].conformes++;
+                if (i['Resultado']==='CONFORME') dm[mes].conformes++;
             });
             const meses = Object.keys(dm).sort();
-            const tasas = meses.map(m => dm[m].total > 0 ? (dm[m].conformes / dm[m].total) * 100 : 0);
-            charts.tendencia = new Chart(ctx, {
-                type: 'line',
-                data: { labels: meses, datasets: [{ label: '% Conformidad', data: tasas, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.4, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } }
-            });
+            const tasas = meses.map(m=>dm[m].total>0?(dm[m].conformes/dm[m].total)*100:0);
+            crearGrafico('chartTendencia','line',meses,[{label:'% Conformidad',data:tasas,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',tension:0.4,fill:true}],
+                {plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}});
         }
-
         function crearRankingMaquinas() {
             const d = {};
-            inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').forEach(i => {
-                const m = i['N° de Maquina'] || 'Sin asignar';
-                d[m] = (d[m] || 0) + 1;
-            });
-            const ranking = Object.entries(d).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            inspecciones.filter(i=>i['Resultado']==='NO CONFORME').forEach(i=>{const m=i['N° de Maquina']||'Sin asignar';d[m]=(d[m]||0)+1;});
+            const ranking = Object.entries(d).sort((a,b)=>b[1]-a[1]).slice(0,10);
             document.getElementById('rankingMaquinas').innerHTML =
-                `<table style="width:100%"><thead><tr><th>#</th><th>Máquina</th><th>No Conformes</th></tr></thead><tbody>` +
-                ranking.map((item, idx) => `<tr><td><strong>${idx + 1}</strong></td><td>${item[0]}</td><td><span class="badge badge-danger">${item[1]}</span></td></tr>`).join('') +
+                `<table style="width:100%"><thead><tr><th>#</th><th>Máquina</th><th>No Conformes</th></tr></thead><tbody>`+
+                ranking.map((item,idx)=>`<tr><td><strong>${idx+1}</strong></td><td>${item[0]}</td><td><span class="badge badge-danger">${item[1]}</span></td></tr>`).join('')+
                 `</tbody></table>`;
         }
 
