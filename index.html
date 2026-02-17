@@ -517,7 +517,7 @@
 
     <script>
         // ⚠️ REEMPLAZA ESTO CON TU URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwATiqKeEyfkXfQMrmlnAnHHHgme2kRRUTtI9VX5Tr20_-By-yy8iIjmXE74N_w2OkY/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySp9E9vzdS1BP-ic-ubLJ5urwZhyjkiafaaKAGZwMolXoUwXOxA7fKuf0gBEeN9kAg/exec';
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
@@ -619,31 +619,101 @@
         }
 
         // ============================================================
-        // ⭐ CARGAR DATOS DE INSPECCIÓN
+        // ⭐ CARGAR DATOS DE INSPECCIÓN CON ALERTA LLAMATIVA
         // ============================================================
         function cargarDatosInspeccion(insp) {
-            // Campos que SÍ se auto-rellenan
+            // ✅ Campos que se auto-rellenan
             setSelectValue('inspector', insp['Inspector']);
             setSelectValue('turnoInspeccion', insp['Turno de Inspeccion']);
-            document.getElementById('numMaquina').value = insp['N° de Maquina'] || '';
-            document.getElementById('producto').value = insp['Producto'] || '';
-            document.getElementById('ordenProduccion').value = insp['Orden de Produccion'] || '';
-            document.getElementById('cantidadProducir').value = insp['Cantidad a Producir'] || '';
-            setSelectValue('coordinadorCalidad', insp['Coordinador Calidad de turno']);
+            document.getElementById('numMaquina').value        = insp['N° de Maquina'] || '';
+            document.getElementById('producto').value          = insp['Producto'] || '';
+            document.getElementById('ordenProduccion').value   = insp['Orden de Produccion'] || '';
+            document.getElementById('cantidadProducir').value  = insp['Cantidad a Producir'] || '';
+            setSelectValue('coordinadorCalidad',    insp['Coordinador Calidad de turno']);
             setSelectValue('coordinadorProduccion', insp['Coordinador de produccion de turno']);
             document.getElementById('operario1').value = insp['Operario1'] || '';
             setSelectValue('turnoOperario1', insp['Turno operario 1']);
             document.getElementById('operario2').value = insp['Operario2'] || '';
             setSelectValue('turnoOperario2', insp['Turno operario 2']);
 
-            // Campos que NO se rellenan (completa el usuario)
-            // cajas, resultado, defectos, observaciones
+            // ❌ NO se rellenan: cajas, resultado, defectos, observaciones
 
-            cerrarRecientes();
+            // Limpiar búsqueda
             document.getElementById('suggestionCard').style.display = 'none';
             document.getElementById('busquedaMaquina').value = '';
-            document.querySelector('.section-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            mostrarAlerta('✅ Datos cargados. Completa cajas, resultado y guarda.', 'success');
+
+            // Scroll al top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // ⭐ Mostrar alerta llamativa
+            mostrarAlertaCarga(insp);
+        }
+
+        // ⭐ ALERTA VISUAL LLAMATIVA DE CARGA AUTOMÁTICA
+        function mostrarAlertaCarga(insp) {
+            const cont = document.getElementById('alertContainer');
+            cont.innerHTML = '';
+
+            const al = document.createElement('div');
+            al.style.cssText = `
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 18px 20px;
+                border-radius: 14px;
+                margin-bottom: 16px;
+                box-shadow: 0 6px 24px rgba(16,185,129,0.45);
+                animation: slideDown 0.4s ease;
+            `;
+            al.innerHTML = `
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="background:rgba(255,255,255,0.25);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">✅</div>
+                    <div>
+                        <div style="font-size:17px;font-weight:700;letter-spacing:-0.3px;">¡Registro Cargado Automáticamente!</div>
+                        <div style="font-size:12px;opacity:0.9;margin-top:2px;">Completa solo Cajas y Resultado, luego guarda</div>
+                    </div>
+                </div>
+                <div style="background:rgba(0,0,0,0.15);border-radius:10px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div style="font-size:13px;">
+                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🏭 Máquina</div>
+                        <div style="font-weight:700;font-size:15px;margin-top:2px;">${insp['N° de Maquina'] || '—'}</div>
+                    </div>
+                    <div style="font-size:13px;">
+                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👤 Inspector</div>
+                        <div style="font-weight:700;font-size:15px;margin-top:2px;">${insp['Inspector'] || '—'}</div>
+                    </div>
+                    <div style="font-size:13px;">
+                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">📦 Producto</div>
+                        <div style="font-weight:600;margin-top:2px;">${insp['Producto'] || '—'}</div>
+                    </div>
+                    <div style="font-size:13px;">
+                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🔢 Orden de Producción</div>
+                        <div style="font-weight:600;margin-top:2px;">${insp['Orden de Produccion'] || '—'}</div>
+                    </div>
+                    <div style="font-size:13px;">
+                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👷 Operario 1</div>
+                        <div style="font-weight:600;margin-top:2px;">${insp['Operario1'] || '—'}</div>
+                    </div>
+                    <div style="font-size:13px;">
+                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👷 Operario 2</div>
+                        <div style="font-weight:600;margin-top:2px;">${insp['Operario2'] || '—'}</div>
+                    </div>
+                </div>
+                <div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,0.15);border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:16px;">📋</span>
+                    <span>Pendiente completar: <strong>Cajas producción → Resultado de inspección → Guardar</strong></span>
+                </div>
+            `;
+            cont.appendChild(al);
+
+            // Auto-cerrar en 10 segundos con fade-out suave
+            setTimeout(() => {
+                if (al.parentNode) {
+                    al.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    al.style.opacity = '0';
+                    al.style.transform = 'translateY(-8px)';
+                    setTimeout(() => { if (al.parentNode) al.remove(); }, 600);
+                }
+            }, 10000);
         }
 
         function setSelectValue(id, value) {
@@ -698,38 +768,39 @@
             }
         }
 
-        // ⭐ FUNCIÓN CORREGIDA: usa encodeURIComponent y compara correctamente
+        // ⭐ Mapa global para guardar inspecciones por máquina
+        let maquinasDataMap = {};
+
         async function seleccionarInspector(inspector) {
             const body = document.getElementById('recientesBody');
             const title = document.getElementById('modalTitle');
 
             inspectorSeleccionado = inspector;
+            maquinasDataMap = {}; // Limpiar mapa anterior
             title.textContent = `🏭 Máquinas de ${inspector}`;
             body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Buscando máquinas...</span></div>';
 
             try {
-                // ⭐ Codificación correcta del nombre del inspector
                 const url = `${SCRIPT_URL}?action=maquinasPorInspector&inspector=${encodeURIComponent(inspector)}`;
                 const res = await fetch(url);
-                const text = await res.text(); // Primero texto para debug
-                
+                const text = await res.text();
+
                 let data;
-                try {
-                    data = JSON.parse(text);
-                } catch(parseErr) {
-                    throw new Error('Respuesta inválida del servidor');
-                }
+                try { data = JSON.parse(text); } 
+                catch(e) { throw new Error('Respuesta inválida del servidor'); }
 
                 if (data.error) throw new Error(data.error);
 
                 if (Array.isArray(data) && data.length > 0) {
+                    // ⭐ Guardar en el mapa global usando índice numérico para evitar problemas de encoding
+                    data.forEach((maq, idx) => { maquinasDataMap[idx] = maq; });
+
                     body.innerHTML = `
                         <button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>
-                        ${data.map(maq => {
+                        ${data.map((maq, idx) => {
                             const tiempo = calcularTiempoTranscurrido(maq.timestamp);
-                            // ⭐ Codificación correcta al pasar parámetros al onclick
                             return `
-                                <div class="maquina-item" onclick="cargarInspeccionPorInspectorMaquina(${JSON.stringify(inspector)}, ${JSON.stringify(maq.maquina)})">
+                                <div class="maquina-item" onclick="cargarInspeccionPorIndice(${idx})">
                                     <div class="maquina-nombre">🏭 ${maq.maquina}</div>
                                     <div class="maquina-tiempo">⏰ ${tiempo}</div>
                                 </div>`;
@@ -754,35 +825,72 @@
             }
         }
 
-        // ⭐ FUNCIÓN CORREGIDA: parámetros como strings JSON
-        async function cargarInspeccionPorInspectorMaquina(inspector, maquina) {
-            const body = document.getElementById('recientesBody');
-            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspección...</span></div>';
+        // ⭐ CARGA POR ÍNDICE DEL MAPA GLOBAL
+        async function cargarInspeccionPorIndice(idx) {
+            const maqData = maquinasDataMap[idx];
+            if (!maqData) {
+                cerrarRecientes();
+                mostrarAlerta('❌ Error: no se encontró la máquina seleccionada', 'error');
+                return;
+            }
+
+            // Guardar datos antes de cerrar (inspectorSeleccionado se limpia en cerrarRecientes)
+            const inspector = inspectorSeleccionado;
+            const maquina   = maqData.maquina;
+
+            // ⭐ 1. Cerrar modal inmediatamente (feedback visual instantáneo)
+            document.getElementById('modalRecientes').classList.remove('active');
+
+            // ⭐ 2. Mostrar spinner de carga en la página principal
+            const cont = document.getElementById('alertContainer');
+            cont.innerHTML = `
+                <div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:16px 20px;border-radius:12px;margin-bottom:16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(102,126,234,0.4);">
+                    <div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;width:24px;height:24px;flex-shrink:0;"></div>
+                    <div>
+                        <div style="font-weight:700;font-size:15px;">Buscando última inspección...</div>
+                        <div style="font-size:12px;opacity:0.85;margin-top:2px;">🏭 ${maquina} · 👤 ${inspector}</div>
+                    </div>
+                </div>`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             try {
                 const url = `${SCRIPT_URL}?action=ultimaInspeccionInspectorMaquina&inspector=${encodeURIComponent(inspector)}&maquina=${encodeURIComponent(maquina)}`;
-                const res = await fetch(url);
-                const data = await res.json();
+                const res  = await fetch(url);
+                const text = await res.text();
 
-                if (data && data.encontrada) {
+                let data;
+                try { data = JSON.parse(text); }
+                catch(e) { throw new Error('Respuesta inválida del servidor'); }
+
+                if (data && data.encontrada && data.inspeccion) {
+                    // ⭐ 3. Cargar datos y mostrar alerta de éxito
                     cargarDatosInspeccion(data.inspeccion);
                 } else {
-                    mostrarAlerta('⚠️ No se encontró inspección reciente para esta combinación', 'error');
-                    cerrarRecientes();
+                    cont.innerHTML = '';
+                    mostrarAlerta(`⚠️ No se encontró inspección reciente para la máquina <strong>${maquina}</strong>. Puedes completar el formulario manualmente.`, 'error');
                 }
             } catch(err) {
-                mostrarAlerta('❌ Error al cargar la inspección: ' + err.message, 'error');
-                cerrarRecientes();
+                cont.innerHTML = '';
+                mostrarAlerta('❌ Error al cargar: ' + err.message, 'error');
             }
         }
 
         function cerrarRecientes() {
             document.getElementById('modalRecientes').classList.remove('active');
-            inspectorSeleccionado = null;
+            // NO limpiar inspectorSeleccionado aquí porque cargarInspeccionPorIndice lo necesita
         }
 
         document.getElementById('modalRecientes').addEventListener('click', function(e) {
-            if (e.target === this) cerrarRecientes();
+            if (e.target === this) {
+                cerrarRecientes();
+                inspectorSeleccionado = null;
+            }
+        });
+
+        // Botón X del modal también limpia el inspector
+        document.querySelector('.modal-close').addEventListener('click', function() {
+            cerrarRecientes();
+            inspectorSeleccionado = null;
         });
 
         function calcularTiempoTranscurrido(timestamp) {
