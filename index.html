@@ -272,7 +272,10 @@
                                 <label class="required">Cantidad a Producir</label>
                                 <input type="number" id="cantidadProducir" required placeholder="Cantidad">
                             </div>
-                        </div>                    
+                        </div>
+                        <!-- Campo Código oculto: se envía al servidor pero no se muestra -->
+                        <input type="hidden" id="codigo" value="">
+
                         <div class="form-group">
                             <label class="required">Producto</label>
                             <input type="text" id="producto" required placeholder="Nombre del producto">
@@ -518,7 +521,7 @@
 
     <script>
         // ⚠️ REEMPLAZA ESTO CON TU URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXd2xOChY0BXqJhFA7AhFvM9JZ4vCUkemHuAQ7HUlsJRx4DDDA_EVP-JIc4iXfjocY/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFJ3z2K-2tqCLgnAViql7LMZBkJFoHdcEU6MNrdUL7bWMEJV7v8RUD0IkEI_htbJJW/exec';
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
@@ -607,7 +610,8 @@
             setSelectValue('inspector', insp['Inspector']);
             setSelectValue('turnoInspeccion', insp['Turno de Inspeccion']);
             document.getElementById('numMaquina').value = insp['N° de Maquina'] || '';
-            document.getElementById('codigo').value = insp['Codigo'] || ''; // ⭐ NUEVA COLUMNA
+            // Codigo se carga en campo oculto si existe en el registro
+            document.getElementById('codigo').value = insp['Codigo'] || '';
             document.getElementById('producto').value = insp['Producto'] || '';
             document.getElementById('ordenProduccion').value = insp['Orden de Produccion'] || '';
             document.getElementById('cantidadProducir').value = insp['Cantidad a Producir'] || '';
@@ -955,7 +959,7 @@
                     coordinadorProduccion: getValor('coordinadorProduccion'),
                     ordenProduccion: document.getElementById('ordenProduccion').value,
                     cantidadProducir: document.getElementById('cantidadProducir').value,
-                    codigo: document.getElementById('codigo').value, // ⭐ NUEVA COLUMNA
+                    codigo: document.getElementById('codigo').value, // campo oculto, se envía vacío en formulario nuevo
                     producto: document.getElementById('producto').value,
                     operario1: document.getElementById('operario1').value,
                     turnoOperario1: document.getElementById('turnoOperario1').value,
@@ -990,6 +994,7 @@
         function limpiarFormulario() {
             document.getElementById('formInspeccion').reset();
             document.getElementById('fechaInspeccion').valueAsDate = new Date();
+            document.getElementById('codigo').value = ''; // limpiar campo oculto
             toggleCondicional();
             document.getElementById('cajasSaldoContainer').innerHTML = '';
             cajasSaldoCount = 0;
@@ -1138,4 +1143,3 @@
     </script>
 </body>
 </html>
-
