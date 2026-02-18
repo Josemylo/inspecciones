@@ -45,7 +45,7 @@
         .quick-btn { flex: 1; padding: 12px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px); }
         .quick-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.2); }
 
-        /* MODAL MEJORADO */
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px); }
         .modal.active { display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--surface); border-radius: 16px; max-width: 500px; width: 100%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; animation: slideUp 0.3s ease; }
@@ -273,6 +273,13 @@
                                 <input type="number" id="cantidadProducir" required placeholder="Cantidad">
                             </div>
                         </div>
+                        
+                        <!-- ⭐ NUEVA COLUMNA K: CODIGO -->
+                        <div class="form-group">
+                            <label class="required">Código</label>
+                            <input type="text" id="codigo" required placeholder="Código del producto">
+                        </div>
+                        
                         <div class="form-group">
                             <label class="required">Producto</label>
                             <input type="text" id="producto" required placeholder="Nombre del producto">
@@ -375,6 +382,7 @@
                             <select id="resultado" required onchange="toggleCondicional()">
                                 <option value="">Seleccionar...</option>
                                 <option value="CONFORME">CONFORME</option>
+                                <option value="PENDIENTE">PENDIENTE</option>
                                 <option value="NO CONFORME">NO CONFORME</option>
                             </select>
                         </div>
@@ -517,7 +525,7 @@
 
     <script>
         // ⚠️ REEMPLAZA ESTO CON TU URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfnlP615JUX8o3H0zSMQVczwOODdZZmGeJNFKLhiBQA7dHWDawcq5N_-tKmH6Juq2e/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXd2xOChY0BXqJhFA7AhFvM9JZ4vCUkemHuAQ7HUlsJRx4DDDA_EVP-JIc4iXfjocY/exec';
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
@@ -526,27 +534,19 @@
         let fotoBase64 = null;
         let timeoutBusqueda = null;
         let inspectorSeleccionado = null;
+        let maquinasDataMap = {};
 
         document.getElementById('fechaInspeccion').valueAsDate = new Date();
 
-        // ============================================================
         // TABLAS ISO 2859-1
-        // ============================================================
         const TABLA_1_NIVEL_II = [
-            { min: 2, max: 8, letra: 'A' },
-            { min: 9, max: 15, letra: 'B' },
-            { min: 16, max: 25, letra: 'C' },
-            { min: 26, max: 50, letra: 'D' },
-            { min: 51, max: 90, letra: 'E' },
-            { min: 91, max: 150, letra: 'F' },
-            { min: 151, max: 280, letra: 'G' },
-            { min: 281, max: 500, letra: 'H' },
-            { min: 501, max: 1200, letra: 'J' },
-            { min: 1201, max: 3200, letra: 'K' },
-            { min: 3201, max: 10000, letra: 'L' },
-            { min: 10001, max: 35000, letra: 'M' },
-            { min: 35001, max: 150000, letra: 'N' },
-            { min: 150001, max: 500000, letra: 'P' },
+            { min: 2, max: 8, letra: 'A' }, { min: 9, max: 15, letra: 'B' },
+            { min: 16, max: 25, letra: 'C' }, { min: 26, max: 50, letra: 'D' },
+            { min: 51, max: 90, letra: 'E' }, { min: 91, max: 150, letra: 'F' },
+            { min: 151, max: 280, letra: 'G' }, { min: 281, max: 500, letra: 'H' },
+            { min: 501, max: 1200, letra: 'J' }, { min: 1201, max: 3200, letra: 'K' },
+            { min: 3201, max: 10000, letra: 'L' }, { min: 10001, max: 35000, letra: 'M' },
+            { min: 35001, max: 150000, letra: 'N' }, { min: 150001, max: 500000, letra: 'P' },
             { min: 500001, max: Infinity, letra: 'Q' }
         ];
         const TABLA_2A = { 'A':2,'B':3,'C':5,'D':8,'E':13,'F':20,'G':32,'H':50,'J':80,'K':125,'L':200,'M':315,'N':500,'P':800,'Q':1250,'R':2000 };
@@ -563,9 +563,6 @@
             calcularPorcentajeHallado();
         }
 
-        // ============================================================
-        // BÚSQUEDA RÁPIDA
-        // ============================================================
         function buscarUltimaInspeccion() {
             const maquina = document.getElementById('busquedaMaquina').value.trim().toUpperCase();
             const card = document.getElementById('suggestionCard');
@@ -577,14 +574,9 @@
                     card.style.display = 'block';
                     const res = await fetch(`${SCRIPT_URL}?action=ultimaInspeccion&maquina=${encodeURIComponent(maquina)}`);
                     const data = await res.json();
-                    if (data && data.encontrada) {
-                        mostrarSugerencia(data.inspeccion);
-                    } else {
-                        card.innerHTML = `<div class="suggestion-card"><div style="text-align:center;padding:20px;color:var(--text-secondary)"><div style="font-size:36px;margin-bottom:8px">🔍</div><div style="font-weight:600;margin-bottom:4px">No se encontró inspección reciente</div><div style="font-size:13px">Puedes empezar una nueva para ${maquina}</div></div></div>`;
-                    }
-                } catch(err) {
-                    card.innerHTML = `<div class="suggestion-card"><div style="text-align:center;padding:20px;color:var(--danger)"><div style="font-size:36px;margin-bottom:8px">⚠️</div><div style="font-weight:600">Error al buscar</div></div></div>`;
-                }
+                    if (data && data.encontrada) { mostrarSugerencia(data.inspeccion); }
+                    else { card.innerHTML = `<div class="suggestion-card"><div style="text-align:center;padding:20px;color:var(--text-secondary)"><div style="font-size:36px;margin-bottom:8px">🔍</div><div style="font-weight:600;margin-bottom:4px">No se encontró inspección reciente</div><div style="font-size:13px">Puedes empezar una nueva para ${maquina}</div></div></div>`; }
+                } catch(err) { card.innerHTML = `<div class="suggestion-card"><div style="text-align:center;padding:20px;color:var(--danger)"><div style="font-size:36px;margin-bottom:8px">⚠️</div><div style="font-weight:600">Error al buscar</div></div></div>`; }
             }, 500);
         }
 
@@ -618,101 +610,59 @@
             mostrarAlerta('📝 Formulario limpio listo para nueva inspección', 'info');
         }
 
-        // ============================================================
-        // ⭐ CARGAR DATOS DE INSPECCIÓN CON ALERTA LLAMATIVA
-        // ============================================================
         function cargarDatosInspeccion(insp) {
-            // ✅ Campos que se auto-rellenan
             setSelectValue('inspector', insp['Inspector']);
             setSelectValue('turnoInspeccion', insp['Turno de Inspeccion']);
-            document.getElementById('numMaquina').value        = insp['N° de Maquina'] || '';
-            document.getElementById('producto').value          = insp['Producto'] || '';
-            document.getElementById('ordenProduccion').value   = insp['Orden de Produccion'] || '';
-            document.getElementById('cantidadProducir').value  = insp['Cantidad a Producir'] || '';
-            setSelectValue('coordinadorCalidad',    insp['Coordinador Calidad de turno']);
+            document.getElementById('numMaquina').value = insp['N° de Maquina'] || '';
+            document.getElementById('codigo').value = insp['Codigo'] || ''; // ⭐ NUEVA COLUMNA
+            document.getElementById('producto').value = insp['Producto'] || '';
+            document.getElementById('ordenProduccion').value = insp['Orden de Produccion'] || '';
+            document.getElementById('cantidadProducir').value = insp['Cantidad a Producir'] || '';
+            setSelectValue('coordinadorCalidad', insp['Coordinador Calidad de turno']);
             setSelectValue('coordinadorProduccion', insp['Coordinador de produccion de turno']);
             document.getElementById('operario1').value = insp['Operario1'] || '';
             setSelectValue('turnoOperario1', insp['Turno operario 1']);
             document.getElementById('operario2').value = insp['Operario2'] || '';
             setSelectValue('turnoOperario2', insp['Turno operario 2']);
 
-            // ❌ NO se rellenan: cajas, resultado, defectos, observaciones
-
-            // Limpiar búsqueda
             document.getElementById('suggestionCard').style.display = 'none';
             document.getElementById('busquedaMaquina').value = '';
-
-            // Scroll al top
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // ⭐ Mostrar alerta llamativa
             mostrarAlertaCarga(insp);
         }
 
-        // ⭐ ALERTA VISUAL LLAMATIVA DE CARGA AUTOMÁTICA
         function mostrarAlertaCarga(insp) {
             const cont = document.getElementById('alertContainer');
             cont.innerHTML = '';
-
             const al = document.createElement('div');
-            al.style.cssText = `
-                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                color: white;
-                padding: 18px 20px;
-                border-radius: 14px;
-                margin-bottom: 16px;
-                box-shadow: 0 6px 24px rgba(16,185,129,0.45);
-                animation: slideDown 0.4s ease;
-            `;
+            al.style.cssText = `background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:18px 20px;border-radius:14px;margin-bottom:16px;box-shadow:0 6px 24px rgba(16,185,129,0.45);animation:slideDown 0.4s ease;`;
             al.innerHTML = `
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
                     <div style="background:rgba(255,255,255,0.25);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">✅</div>
-                    <div>
-                        <div style="font-size:17px;font-weight:700;letter-spacing:-0.3px;">¡Registro Cargado Automáticamente!</div>
-                        <div style="font-size:12px;opacity:0.9;margin-top:2px;">Completa solo Cajas y Resultado, luego guarda</div>
-                    </div>
+                    <div><div style="font-size:17px;font-weight:700;letter-spacing:-0.3px;">¡Registro Cargado Automáticamente!</div>
+                    <div style="font-size:12px;opacity:0.9;margin-top:2px;">Completa solo Cajas y Resultado, luego guarda</div></div>
                 </div>
                 <div style="background:rgba(0,0,0,0.15);border-radius:10px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    <div style="font-size:13px;">
-                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🏭 Máquina</div>
-                        <div style="font-weight:700;font-size:15px;margin-top:2px;">${insp['N° de Maquina'] || '—'}</div>
-                    </div>
-                    <div style="font-size:13px;">
-                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👤 Inspector</div>
-                        <div style="font-weight:700;font-size:15px;margin-top:2px;">${insp['Inspector'] || '—'}</div>
-                    </div>
-                    <div style="font-size:13px;">
-                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">📦 Producto</div>
-                        <div style="font-weight:600;margin-top:2px;">${insp['Producto'] || '—'}</div>
-                    </div>
-                    <div style="font-size:13px;">
-                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🔢 Orden de Producción</div>
-                        <div style="font-weight:600;margin-top:2px;">${insp['Orden de Produccion'] || '—'}</div>
-                    </div>
-                    <div style="font-size:13px;">
-                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👷 Operario 1</div>
-                        <div style="font-weight:600;margin-top:2px;">${insp['Operario1'] || '—'}</div>
-                    </div>
-                    <div style="font-size:13px;">
-                        <div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👷 Operario 2</div>
-                        <div style="font-weight:600;margin-top:2px;">${insp['Operario2'] || '—'}</div>
-                    </div>
+                    <div style="font-size:13px;"><div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🏭 Máquina</div>
+                    <div style="font-weight:700;font-size:15px;margin-top:2px;">${insp['N° de Maquina']||'—'}</div></div>
+                    <div style="font-size:13px;"><div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👤 Inspector</div>
+                    <div style="font-weight:700;font-size:15px;margin-top:2px;">${insp['Inspector']||'—'}</div></div>
+                    <div style="font-size:13px;"><div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">📦 Producto</div>
+                    <div style="font-weight:600;margin-top:2px;">${insp['Producto']||'—'}</div></div>
+                    <div style="font-size:13px;"><div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🔢 Orden</div>
+                    <div style="font-weight:600;margin-top:2px;">${insp['Orden de Produccion']||'—'}</div></div>
+                    <div style="font-size:13px;"><div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👷 Operario 1</div>
+                    <div style="font-weight:600;margin-top:2px;">${insp['Operario1']||'—'}</div></div>
+                    <div style="font-size:13px;"><div style="opacity:0.75;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">👷 Operario 2</div>
+                    <div style="font-weight:600;margin-top:2px;">${insp['Operario2']||'—'}</div></div>
                 </div>
                 <div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,0.15);border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;">
                     <span style="font-size:16px;">📋</span>
                     <span>Pendiente completar: <strong>Cajas producción → Resultado de inspección → Guardar</strong></span>
-                </div>
-            `;
+                </div>`;
             cont.appendChild(al);
-
-            // Auto-cerrar en 10 segundos con fade-out suave
             setTimeout(() => {
-                if (al.parentNode) {
-                    al.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    al.style.opacity = '0';
-                    al.style.transform = 'translateY(-8px)';
-                    setTimeout(() => { if (al.parentNode) al.remove(); }, 600);
-                }
+                if (al.parentNode) { al.style.transition='opacity 0.6s ease,transform 0.6s ease'; al.style.opacity='0'; al.style.transform='translateY(-8px)'; setTimeout(()=>{if(al.parentNode)al.remove();},600); }
             }, 10000);
         }
 
@@ -723,174 +673,80 @@
             if (opt) { sel.value = value; sel.dispatchEvent(new Event('change')); }
         }
 
-        // ============================================================
-        // ⭐ MODAL RECIENTES - INSPECTORES → MÁQUINAS (CORREGIDO)
-        // ============================================================
         async function abrirRecientes() {
             const modal = document.getElementById('modalRecientes');
             const body = document.getElementById('recientesBody');
             const title = document.getElementById('modalTitle');
-
             inspectorSeleccionado = null;
             modal.classList.add('active');
             title.textContent = '👤 Selecciona Inspector';
             body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspectores...</span></div>';
-
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=inspectores`);
                 const data = await res.json();
-
                 if (Array.isArray(data) && data.length > 0) {
                     body.innerHTML = data.map(insp => `
                         <div class="inspector-item" onclick="seleccionarInspector('${insp.nombre.replace(/'/g, "\\'")}')">
-                            <div class="inspector-name">
-                                <span>👤</span>
-                                <span>${insp.nombre}</span>
-                            </div>
+                            <div class="inspector-name"><span>👤</span><span>${insp.nombre}</span></div>
                             <div class="inspector-badge">${insp.cantidad} insp.</div>
-                        </div>
-                    `).join('');
-                } else {
-                    body.innerHTML = `
-                        <div class="empty-recents">
-                            <div class="empty-recents-icon">👤</div>
-                            <div style="font-weight:600;margin-bottom:4px">No hay inspectores recientes</div>
-                            <div style="font-size:13px">Las inspecciones de las últimas 6 horas aparecerán aquí</div>
-                        </div>`;
-                }
-            } catch(err) {
-                body.innerHTML = `
-                    <div class="empty-recents">
-                        <div class="empty-recents-icon">⚠️</div>
-                        <div style="font-weight:600;color:var(--danger)">Error al cargar</div>
-                        <div style="font-size:13px">Verifica tu conexión</div>
-                    </div>`;
-            }
+                        </div>`).join('');
+                } else { body.innerHTML = `<div class="empty-recents"><div class="empty-recents-icon">👤</div><div style="font-weight:600;margin-bottom:4px">No hay inspectores recientes</div><div style="font-size:13px">Las inspecciones de las últimas 6 horas aparecerán aquí</div></div>`; }
+            } catch(err) { body.innerHTML = `<div class="empty-recents"><div class="empty-recents-icon">⚠️</div><div style="font-weight:600;color:var(--danger)">Error al cargar</div><div style="font-size:13px">Verifica tu conexión</div></div>`; }
         }
-
-        // ⭐ Mapa global para guardar inspecciones por máquina
-        let maquinasDataMap = {};
 
         async function seleccionarInspector(inspector) {
             const body = document.getElementById('recientesBody');
             const title = document.getElementById('modalTitle');
-
             inspectorSeleccionado = inspector;
-            maquinasDataMap = {}; // Limpiar mapa anterior
+            maquinasDataMap = {};
             title.textContent = `🏭 Máquinas de ${inspector}`;
             body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Buscando máquinas...</span></div>';
-
             try {
                 const url = `${SCRIPT_URL}?action=maquinasPorInspector&inspector=${encodeURIComponent(inspector)}`;
                 const res = await fetch(url);
                 const text = await res.text();
-
                 let data;
-                try { data = JSON.parse(text); } 
-                catch(e) { throw new Error('Respuesta inválida del servidor'); }
-
+                try { data = JSON.parse(text); } catch(e) { throw new Error('Respuesta inválida del servidor'); }
                 if (data.error) throw new Error(data.error);
-
                 if (Array.isArray(data) && data.length > 0) {
-                    // ⭐ Guardar en el mapa global usando índice numérico para evitar problemas de encoding
                     data.forEach((maq, idx) => { maquinasDataMap[idx] = maq; });
-
-                    body.innerHTML = `
-                        <button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>
-                        ${data.map((maq, idx) => {
-                            const tiempo = calcularTiempoTranscurrido(maq.timestamp);
-                            return `
-                                <div class="maquina-item" onclick="cargarInspeccionPorIndice(${idx})">
-                                    <div class="maquina-nombre">🏭 ${maq.maquina}</div>
-                                    <div class="maquina-tiempo">⏰ ${tiempo}</div>
-                                </div>`;
-                        }).join('')}`;
-                } else {
-                    body.innerHTML = `
-                        <button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>
-                        <div class="empty-recents">
-                            <div class="empty-recents-icon">🏭</div>
-                            <div style="font-weight:600;margin-bottom:4px">No hay máquinas recientes</div>
-                            <div style="font-size:13px">Este inspector no tiene inspecciones en las últimas 6 horas</div>
-                        </div>`;
-                }
-            } catch(err) {
-                body.innerHTML = `
-                    <button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>
-                    <div class="empty-recents">
-                        <div class="empty-recents-icon">⚠️</div>
-                        <div style="font-weight:600;color:var(--danger)">Error: ${err.message}</div>
-                        <div style="font-size:13px">Verifica tu conexión e intenta de nuevo</div>
-                    </div>`;
-            }
+                    body.innerHTML = `<button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>${data.map((maq, idx) => {
+                        const tiempo = calcularTiempoTranscurrido(maq.timestamp);
+                        return `<div class="maquina-item" onclick="cargarInspeccionPorIndice(${idx})">
+                            <div class="maquina-nombre">🏭 ${maq.maquina}</div>
+                            <div class="maquina-tiempo">⏰ ${tiempo}</div></div>`;
+                    }).join('')}`;
+                } else { body.innerHTML = `<button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button><div class="empty-recents"><div class="empty-recents-icon">🏭</div><div style="font-weight:600;margin-bottom:4px">No hay máquinas recientes</div><div style="font-size:13px">Este inspector no tiene inspecciones en las últimas 6 horas</div></div>`; }
+            } catch(err) { body.innerHTML = `<button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button><div class="empty-recents"><div class="empty-recents-icon">⚠️</div><div style="font-weight:600;color:var(--danger)">Error: ${err.message}</div><div style="font-size:13px">Verifica tu conexión e intenta de nuevo</div></div>`; }
         }
 
-        // ⭐ CARGA POR ÍNDICE DEL MAPA GLOBAL
         async function cargarInspeccionPorIndice(idx) {
             const maqData = maquinasDataMap[idx];
-            if (!maqData) {
-                cerrarRecientes();
-                mostrarAlerta('❌ Error: no se encontró la máquina seleccionada', 'error');
-                return;
-            }
-
-            // Guardar datos antes de cerrar (inspectorSeleccionado se limpia en cerrarRecientes)
+            if (!maqData) { cerrarRecientes(); mostrarAlerta('❌ Error: no se encontró la máquina seleccionada', 'error'); return; }
             const inspector = inspectorSeleccionado;
-            const maquina   = maqData.maquina;
-
-            // ⭐ 1. Cerrar modal inmediatamente (feedback visual instantáneo)
+            const maquina = maqData.maquina;
             document.getElementById('modalRecientes').classList.remove('active');
-
-            // ⭐ 2. Mostrar spinner de carga en la página principal
             const cont = document.getElementById('alertContainer');
-            cont.innerHTML = `
-                <div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:16px 20px;border-radius:12px;margin-bottom:16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(102,126,234,0.4);">
-                    <div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;width:24px;height:24px;flex-shrink:0;"></div>
-                    <div>
-                        <div style="font-weight:700;font-size:15px;">Buscando última inspección...</div>
-                        <div style="font-size:12px;opacity:0.85;margin-top:2px;">🏭 ${maquina} · 👤 ${inspector}</div>
-                    </div>
-                </div>`;
+            cont.innerHTML = `<div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:16px 20px;border-radius:12px;margin-bottom:16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(102,126,234,0.4);">
+                <div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;width:24px;height:24px;flex-shrink:0;"></div>
+                <div><div style="font-weight:700;font-size:15px;">Buscando última inspección...</div>
+                <div style="font-size:12px;opacity:0.85;margin-top:2px;">🏭 ${maquina} · 👤 ${inspector}</div></div></div>`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
             try {
                 const url = `${SCRIPT_URL}?action=ultimaInspeccionInspectorMaquina&inspector=${encodeURIComponent(inspector)}&maquina=${encodeURIComponent(maquina)}`;
-                const res  = await fetch(url);
+                const res = await fetch(url);
                 const text = await res.text();
-
                 let data;
-                try { data = JSON.parse(text); }
-                catch(e) { throw new Error('Respuesta inválida del servidor'); }
-
-                if (data && data.encontrada && data.inspeccion) {
-                    // ⭐ 3. Cargar datos y mostrar alerta de éxito
-                    cargarDatosInspeccion(data.inspeccion);
-                } else {
-                    cont.innerHTML = '';
-                    mostrarAlerta(`⚠️ No se encontró inspección reciente para la máquina <strong>${maquina}</strong>. Puedes completar el formulario manualmente.`, 'error');
-                }
-            } catch(err) {
-                cont.innerHTML = '';
-                mostrarAlerta('❌ Error al cargar: ' + err.message, 'error');
-            }
+                try { data = JSON.parse(text); } catch(e) { throw new Error('Respuesta inválida del servidor'); }
+                if (data && data.encontrada && data.inspeccion) { cargarDatosInspeccion(data.inspeccion); }
+                else { cont.innerHTML = ''; mostrarAlerta(`⚠️ No se encontró inspección reciente para la máquina <strong>${maquina}</strong>. Puedes completar el formulario manualmente.`, 'error'); }
+            } catch(err) { cont.innerHTML = ''; mostrarAlerta('❌ Error al cargar: ' + err.message, 'error'); }
         }
 
-        function cerrarRecientes() {
-            document.getElementById('modalRecientes').classList.remove('active');
-            // NO limpiar inspectorSeleccionado aquí porque cargarInspeccionPorIndice lo necesita
-        }
+        function cerrarRecientes() { document.getElementById('modalRecientes').classList.remove('active'); }
 
         document.getElementById('modalRecientes').addEventListener('click', function(e) {
-            if (e.target === this) {
-                cerrarRecientes();
-                inspectorSeleccionado = null;
-            }
-        });
-
-        // Botón X del modal también limpia el inspector
-        document.querySelector('.modal-close').addEventListener('click', function() {
-            cerrarRecientes();
-            inspectorSeleccionado = null;
+            if (e.target === this) { cerrarRecientes(); inspectorSeleccionado = null; }
         });
 
         function calcularTiempoTranscurrido(timestamp) {
@@ -905,9 +761,6 @@
             return 'Hace un momento';
         }
 
-        // ============================================================
-        // CAMPO "OTROS"
-        // ============================================================
         function toggleOtros(campo) {
             const sel = document.getElementById(campo);
             const cont = document.getElementById('otros-' + campo);
@@ -922,9 +775,6 @@
             return sel.value;
         }
 
-        // ============================================================
-        // CÁLCULOS
-        // ============================================================
         function calcularPorcentajeHallado() {
             const muestreadas = parseFloat(document.getElementById('unidadesMuestreadas').value) || 0;
             const defectuosas = parseFloat(document.getElementById('unidadesDefectuosas').value) || 0;
@@ -973,9 +823,6 @@
             }
         }
 
-        // ============================================================
-        // CAJAS SALDO
-        // ============================================================
         function agregarCajaSaldo() {
             if (cajasSaldoCount >= 5) { mostrarAlerta('No puedes agregar más de 5 cajas saldo', 'error'); return; }
             cajasSaldoCount++;
@@ -1023,9 +870,6 @@
             calcularTotal();
         }
 
-        // ============================================================
-        // FOTO
-        // ============================================================
         function previsualizarFoto(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1049,7 +893,6 @@
 
         function eliminarFoto() {
             fotoBase64 = null;
-            const ids = ['previewFoto', 'fotoPlaceholder', 'fotoBotones', 'fotoInfo'];
             document.getElementById('previewFoto').style.display = 'none';
             document.getElementById('previewFoto').src = '';
             document.getElementById('fotoPlaceholder').style.display = 'block';
@@ -1074,9 +917,6 @@
             document.getElementById('fotoContainer').style.borderColor = 'var(--border)';
         }
 
-        // ============================================================
-        // ALERTAS
-        // ============================================================
         function mostrarAlerta(msg, tipo = 'success') {
             const cont = document.getElementById('alertContainer');
             const al = document.createElement('div');
@@ -1088,12 +928,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ============================================================
-        // GUARDAR INSPECCIÓN
-        // ============================================================
         document.getElementById('formInspeccion').addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const camposOtros = [
                 { id: 'inspector', label: 'Inspector' },
                 { id: 'coordinadorCalidad', label: 'Coordinador Calidad' },
@@ -1105,12 +941,10 @@
                     if (!m.value.trim()) { mostrarAlerta(`⚠️ Por favor escribe el nombre en "${c.label}"`, 'error'); m.focus(); return; }
                 }
             }
-
             const btn = document.querySelector('button[type="submit"]');
             const orig = btn.innerHTML;
             btn.innerHTML = '<div class="spinner"></div> Guardando...';
             btn.disabled = true;
-
             try {
                 const cajasSaldo = {};
                 for (let i = 1; i <= 5; i++) {
@@ -1119,7 +953,6 @@
                     cajasSaldo[`fechaSaldo${i}`] = document.getElementById(`fechaSaldo${i}`)?.value || '';
                     cajasSaldo[`turnoSaldo${i}`] = document.getElementById(`turnoSaldo${i}`)?.value || '';
                 }
-
                 const inspeccion = {
                     fechaInspeccion: document.getElementById('fechaInspeccion').value,
                     turnoInspeccion: document.getElementById('turnoInspeccion').value,
@@ -1129,6 +962,7 @@
                     coordinadorProduccion: getValor('coordinadorProduccion'),
                     ordenProduccion: document.getElementById('ordenProduccion').value,
                     cantidadProducir: document.getElementById('cantidadProducir').value,
+                    codigo: document.getElementById('codigo').value, // ⭐ NUEVA COLUMNA
                     producto: document.getElementById('producto').value,
                     operario1: document.getElementById('operario1').value,
                     turnoOperario1: document.getElementById('turnoOperario1').value,
@@ -1149,26 +983,17 @@
                     observaciones: document.getElementById('observaciones').value,
                     imagenBase64: fotoBase64 || ''
                 };
-
                 await fetch(SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(inspeccion)
                 });
-
                 mostrarAlerta('✅ Inspección guardada exitosamente en Google Sheets', 'success');
                 limpiarFormulario();
-            } catch(err) {
-                mostrarAlerta('❌ Error al guardar. Verifica tu conexión.', 'error');
-            } finally {
-                btn.innerHTML = orig;
-                btn.disabled = false;
-            }
+            } catch(err) { mostrarAlerta('❌ Error al guardar. Verifica tu conexión.', 'error'); }
+            finally { btn.innerHTML = orig; btn.disabled = false; }
         });
 
-        // ============================================================
-        // LIMPIAR FORMULARIO
-        // ============================================================
         function limpiarFormulario() {
             document.getElementById('formInspeccion').reset();
             document.getElementById('fechaInspeccion').valueAsDate = new Date();
@@ -1190,9 +1015,6 @@
             eliminarFoto();
         }
 
-        // ============================================================
-        // TABS
-        // ============================================================
         function showTab(name, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1202,9 +1024,6 @@
             else if (name === 'estadisticas') cargarEstadisticas();
         }
 
-        // ============================================================
-        // HISTORIAL
-        // ============================================================
         async function cargarHistorial() {
             const loading = document.getElementById('loadingHistorial');
             const tbody = document.getElementById('cuerpoTabla');
@@ -1219,11 +1038,8 @@
                 poblarFiltros();
                 if (!inspecciones || inspecciones.length === 0) document.getElementById('emptyState').style.display = 'block';
                 else mostrarTabla();
-            } catch(err) {
-                mostrarAlerta('Error al cargar el historial. Verifica tu conexión.', 'error');
-            } finally {
-                loading.style.display = 'none';
-            }
+            } catch(err) { mostrarAlerta('Error al cargar el historial. Verifica tu conexión.', 'error'); }
+            finally { loading.style.display = 'none'; }
         }
 
         function poblarFiltros() {
@@ -1290,9 +1106,6 @@
             mostrarAlerta('✅ Archivo exportado exitosamente', 'success');
         }
 
-        // ============================================================
-        // ESTADÍSTICAS Y GRÁFICOS
-        // ============================================================
         async function cargarEstadisticas() {
             if (!inspecciones || inspecciones.length === 0) await cargarHistorial();
             const total = inspecciones.length;
@@ -1300,7 +1113,6 @@
             const noConformes = inspecciones.filter(i => i['Resultado'] === 'NO CONFORME').length;
             const tarjAm = inspecciones.filter(i => i['Tipo de Tarjeta'] === 'TARJETA AMARILLA').length;
             const tarjRj = inspecciones.filter(i => i['Tipo de Tarjeta'] === 'TARJETA ROJA').length;
-
             document.getElementById('statsContainer').innerHTML = `
                 <div class="stat-card"><h4>Total Inspecciones</h4><p>${total}</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,var(--success),#059669)"><h4>Conformes</h4><p>${conformes}</p></div>
@@ -1308,80 +1120,27 @@
                 <div class="stat-card" style="background:linear-gradient(135deg,#06b6d4,#0891b2)"><h4>Tasa Conformidad</h4><p>${total>0?((conformes/total)*100).toFixed(1):0}%</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><h4>Tarjetas Amarillas</h4><p>${tarjAm}</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,#dc3545,#bd2130)"><h4>Tarjetas Rojas</h4><p>${tarjRj}</p></div>`;
-
             crearGraficoInspectorPie(); crearGraficoInspectorBar(); crearGraficoResultados();
             crearGraficoMaquinas(); crearGraficoTurnos(); crearGraficoDefectos();
             crearGraficoTendencia(); crearRankingMaquinas();
         }
 
         const COLORES = ['#667eea','#764ba2','#10b981','#f59e0b','#ef4444','#06b6d4','#8b5cf6','#ec4899','#14b8a6','#f97316','#84cc16','#a78bfa'];
-        function agrupar(campo) {
-            return inspecciones.reduce((acc, i) => { const k = i[campo]||'Sin asignar'; acc[k]=(acc[k]||0)+1; return acc; }, {});
-        }
-
+        function agrupar(campo) { return inspecciones.reduce((acc, i) => { const k = i[campo]||'Sin asignar'; acc[k]=(acc[k]||0)+1; return acc; }, {}); }
         function crearGrafico(id, tipo, labels, datasets, opciones = {}) {
             const ctx = document.getElementById(id);
             if (charts[id]) charts[id].destroy();
             charts[id] = new Chart(ctx, { type: tipo, data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, ...opciones } });
         }
-
-        function crearGraficoInspectorPie() {
-            const d = agrupar('Inspector');
-            crearGrafico('chartInspectorPie','pie',Object.keys(d),[{data:Object.values(d),backgroundColor:COLORES}],{plugins:{legend:{position:'bottom'}}});
-        }
-        function crearGraficoInspectorBar() {
-            const d = agrupar('Inspector');
-            crearGrafico('chartInspectorBar','bar',Object.keys(d),[{label:'Inspecciones',data:Object.values(d),backgroundColor:'#667eea'}],{plugins:{legend:{display:false}}});
-        }
-        function crearGraficoResultados() {
-            const c = inspecciones.filter(i=>i['Resultado']==='CONFORME').length;
-            const nc = inspecciones.filter(i=>i['Resultado']==='NO CONFORME').length;
-            crearGrafico('chartResultados','doughnut',['Conformes','No Conformes'],[{data:[c,nc],backgroundColor:['#10b981','#ef4444']}],{plugins:{legend:{position:'bottom'}}});
-        }
-        function crearGraficoMaquinas() {
-            const d = {};
-            inspecciones.filter(i=>i['Resultado']==='NO CONFORME').forEach(i=>{const m=i['N° de Maquina']||'Sin asignar';d[m]=(d[m]||0)+1;});
-            const sorted = Object.entries(d).sort((a,b)=>b[1]-a[1]).slice(0,10);
-            crearGrafico('chartMaquinas','bar',sorted.map(x=>x[0]),[{label:'No Conformes',data:sorted.map(x=>x[1]),backgroundColor:'#ef4444'}],{indexAxis:'y',plugins:{legend:{display:false}}});
-        }
-        function crearGraficoTurnos() {
-            const d = agrupar('Turno de Inspeccion');
-            crearGrafico('chartTurnos','bar',Object.keys(d),[{label:'Inspecciones',data:Object.values(d),backgroundColor:['#667eea','#764ba2']}],{plugins:{legend:{display:false}}});
-        }
-        function crearGraficoDefectos() {
-            const d = {};
-            inspecciones.filter(i=>i['TIpo de defecto']).forEach(i=>{d[i['TIpo de defecto']]=(d[i['TIpo de defecto']]||0)+1;});
-            crearGrafico('chartDefectos','pie',Object.keys(d),[{data:Object.values(d),backgroundColor:['#ef4444','#f59e0b','#10b981','#06b6d4']}],{plugins:{legend:{position:'bottom'}}});
-        }
-        function crearGraficoTendencia() {
-            const dm = {};
-            inspecciones.forEach(i=>{
-                if (!i['Fecha de inspeccion']) return;
-                const mes = new Date(i['Fecha de inspeccion']).toLocaleDateString('es',{month:'short',year:'numeric'});
-                if (!dm[mes]) dm[mes]={total:0,conformes:0};
-                dm[mes].total++;
-                if (i['Resultado']==='CONFORME') dm[mes].conformes++;
-            });
-            const meses = Object.keys(dm).sort();
-            const tasas = meses.map(m=>dm[m].total>0?(dm[m].conformes/dm[m].total)*100:0);
-            crearGrafico('chartTendencia','line',meses,[{label:'% Conformidad',data:tasas,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',tension:0.4,fill:true}],
-                {plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}});
-        }
-        function crearRankingMaquinas() {
-            const d = {};
-            inspecciones.filter(i=>i['Resultado']==='NO CONFORME').forEach(i=>{const m=i['N° de Maquina']||'Sin asignar';d[m]=(d[m]||0)+1;});
-            const ranking = Object.entries(d).sort((a,b)=>b[1]-a[1]).slice(0,10);
-            document.getElementById('rankingMaquinas').innerHTML =
-                `<table style="width:100%"><thead><tr><th>#</th><th>Máquina</th><th>No Conformes</th></tr></thead><tbody>`+
-                ranking.map((item,idx)=>`<tr><td><strong>${idx+1}</strong></td><td>${item[0]}</td><td><span class="badge badge-danger">${item[1]}</span></td></tr>`).join('')+
-                `</tbody></table>`;
-        }
-
-        function formatearFecha(fecha) {
-            if (!fecha) return 'N/A';
-            return new Date(fecha).toLocaleDateString('es-PE');
-        }
-
+        function crearGraficoInspectorPie() { const d = agrupar('Inspector'); crearGrafico('chartInspectorPie','pie',Object.keys(d),[{data:Object.values(d),backgroundColor:COLORES}],{plugins:{legend:{position:'bottom'}}}); }
+        function crearGraficoInspectorBar() { const d = agrupar('Inspector'); crearGrafico('chartInspectorBar','bar',Object.keys(d),[{label:'Inspecciones',data:Object.values(d),backgroundColor:'#667eea'}],{plugins:{legend:{display:false}}}); }
+        function crearGraficoResultados() { const c = inspecciones.filter(i=>i['Resultado']==='CONFORME').length; const nc = inspecciones.filter(i=>i['Resultado']==='NO CONFORME').length; crearGrafico('chartResultados','doughnut',['Conformes','No Conformes'],[{data:[c,nc],backgroundColor:['#10b981','#ef4444']}],{plugins:{legend:{position:'bottom'}}}); }
+        function crearGraficoMaquinas() { const d = {}; inspecciones.filter(i=>i['Resultado']==='NO CONFORME').forEach(i=>{const m=i['N° de Maquina']||'Sin asignar';d[m]=(d[m]||0)+1;}); const sorted = Object.entries(d).sort((a,b)=>b[1]-a[1]).slice(0,10); crearGrafico('chartMaquinas','bar',sorted.map(x=>x[0]),[{label:'No Conformes',data:sorted.map(x=>x[1]),backgroundColor:'#ef4444'}],{indexAxis:'y',plugins:{legend:{display:false}}}); }
+        function crearGraficoTurnos() { const d = agrupar('Turno de Inspeccion'); crearGrafico('chartTurnos','bar',Object.keys(d),[{label:'Inspecciones',data:Object.values(d),backgroundColor:['#667eea','#764ba2']}],{plugins:{legend:{display:false}}}); }
+        function crearGraficoDefectos() { const d = {}; inspecciones.filter(i=>i['TIpo de defecto']).forEach(i=>{d[i['TIpo de defecto']]=(d[i['TIpo de defecto']]||0)+1;}); crearGrafico('chartDefectos','pie',Object.keys(d),[{data:Object.values(d),backgroundColor:['#ef4444','#f59e0b','#10b981','#06b6d4']}],{plugins:{legend:{position:'bottom'}}}); }
+        function crearGraficoTendencia() { const dm = {}; inspecciones.forEach(i=>{ if (!i['Fecha de inspeccion']) return; const mes = new Date(i['Fecha de inspeccion']).toLocaleDateString('es',{month:'short',year:'numeric'}); if (!dm[mes]) dm[mes]={total:0,conformes:0}; dm[mes].total++; if (i['Resultado']==='CONFORME') dm[mes].conformes++; }); const meses = Object.keys(dm).sort(); const tasas = meses.map(m=>dm[m].total>0?(dm[m].conformes/dm[m].total)*100:0); crearGrafico('chartTendencia','line',meses,[{label:'% Conformidad',data:tasas,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',tension:0.4,fill:true}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}); }
+        function crearRankingMaquinas() { const d = {}; inspecciones.filter(i=>i['Resultado']==='NO CONFORME').forEach(i=>{const m=i['N° de Maquina']||'Sin asignar';d[m]=(d[m]||0)+1;}); const ranking = Object.entries(d).sort((a,b)=>b[1]-a[1]).slice(0,10); document.getElementById('rankingMaquinas').innerHTML = `<table style="width:100%"><thead><tr><th>#</th><th>Máquina</th><th>No Conformes</th></tr></thead><tbody>`+ ranking.map((item,idx)=>`<tr><td><strong>${idx+1}</strong></td><td>${item[0]}</td><td><span class="badge badge-danger">${item[1]}</span></td></tr>`).join('') +`</tbody></table>`; }
+        function formatearFecha(fecha) { if (!fecha) return 'N/A'; return new Date(fecha).toLocaleDateString('es-PE'); }
         window.addEventListener('load', () => cargarHistorial());
     </script>
 </body>
