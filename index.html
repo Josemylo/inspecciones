@@ -6,6 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Inspección - Inyección y Soplado</title>
+    <!-- ✅ FAVICON INCRUSTADO - No requiere archivos externos ni GitHub -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyNDAiIHJ4PSIzMiIgcnk9IjMyIiBmaWxsPSIjZmZmZmZmIi8+CiAgPHBhdGggZD0iTTEwMCAxOCBMMTU4IDUxIFExNjggNTcgMTY4IDY4IEwxNjggMTMyIFExNjggMTQzIDE1OCAxNDkgTDEwMCAxODIgTDQyIDE0OSBRMzIgMTQzIDMyIDEzMiBMMzIgNjggUTMyIDU3IDQyIDUxIFoiCiAgICBmaWxsPSIjRTg2MzVBIiBvcGFjaXR5PSIwLjA4Ii8+CiAgPHBhdGggZD0iTTEwMCAxOCBMMTU4IDUxIFExNjggNTcgMTY4IDY4IEwxNjggMTMyIFExNjggMTQzIDE1OCAxNDkgTDEwMCAxODIgTDQyIDE0OSBRMzIgMTQzIDMyIDEzMiBMMzIgNjggUTMyIDU3IDQyIDUxIFoiCiAgICBmaWxsPSJub25lIiBzdHJva2U9IiNFODYzNUEiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjY0IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjRTg2MzVBIj5JUzwvdGV4dD4KICA8bGluZSB4MT0iMzAiIHkxPSIxOTgiIHgyPSIxNzAiIHkyPSIxOTgiIHN0cm9rZT0iI0U4NjM1QSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4zIi8+CiAgPHRleHQgeD0iMTAwIiB5PSIyMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iI0U4NjM1QSIgbGV0dGVyLXNwYWNpbmc9IjMiPkFMQsOJQTwvdGV4dD4KICA8dGV4dCB4PSIxMDAiIHk9IjIzNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iNDAwIiBmaWxsPSIjYzAzOTJiIiBsZXR0ZXItc3BhY2luZz0iMiIgb3BhY2l0eT0iMC44Ij5DYWxpZGFkPC90ZXh0Pgo8L3N2Zz4K">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjQwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI0MCI+CiAgPHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyNDAiIHJ4PSIzMiIgcnk9IjMyIiBmaWxsPSIjZmZmZmZmIi8+CiAgPHBhdGggZD0iTTEwMCAxOCBMMTU4IDUxIFExNjggNTcgMTY4IDY4IEwxNjggMTMyIFExNjggMTQzIDE1OCAxNDkgTDEwMCAxODIgTDQyIDE0OSBRMzIgMTQzIDMyIDEzMiBMMzIgNjggUTMyIDU3IDQyIDUxIFoiCiAgICBmaWxsPSJub25lIiBzdHJva2U9IiNFODYzNUEiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNjQiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiNFODYzNUEiPklTPC90ZXh0PgogIDxsaW5lIHgxPSIzMCIgeTE9IjE5OCIgeDI9IjE3MCIgeTI9IjE5OCIgc3Ryb2tlPSIjRTg2MzVBIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4zIi8+CiAgPHRleHQgeD0iMTAwIiB5PSIyMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjRTg2MzVBIiBsZXR0ZXItc3BhY2luZz0iMyI+QUxCw4lBPC90ZXh0PgogIDx0ZXh0IHg9IjEwMCIgeT0iMjM0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2MwMzkyYiIgbGV0dGVyLXNwYWNpbmc9IjIiIG9wYWNpdHk9IjAuOCI+Q2FsaWRhZDwvdGV4dD4KPC9zdmc+">
+    <meta name="theme-color" content="#E8635A">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -247,7 +251,7 @@
                         <div class="section-title">🏭 Máquina y Producción</div>
                         <div class="form-group">
                             <label class="required">N° de Máquina</label>
-                            <input type="text" id="numMaquina" required placeholder="Ej: I-35, S-10">
+                            <input type="text" id="numMaquina" required placeholder="Ej:35,10">
                         </div>
                         <div class="form-group">
                             <label class="required">Coordinador Producción de Turno</label>
@@ -325,9 +329,15 @@
                             </div>
                         </div>
                         <div class="grid-2">
-                            <div class="form-group"><label>Fecha Producción</label><input type="date" id="fechaCajasCompletas"></div>
-                            <div class="form-group"><label>Turno</label>
-                                <select id="turnoCajasCompletas">
+                            <!-- FECHA PRODUCCIÓN: ahora obligatorio -->
+                            <div class="form-group">
+                                <label class="required">Fecha Producción</label>
+                                <input type="date" id="fechaCajasCompletas" required>
+                            </div>
+                            <!-- TURNO CAJAS COMPLETAS: ahora obligatorio -->
+                            <div class="form-group">
+                                <label class="required">Turno</label>
+                                <select id="turnoCajasCompletas" required>
                                     <option value="">Seleccionar...</option>
                                     <option value="DIA">DÍA</option>
                                     <option value="NOCHE">NOCHE</option>
@@ -362,9 +372,10 @@
                             <input type="number" id="unidadesMuestreadas" required placeholder="Se calcula automáticamente" readonly>
                         </div>
                         <div class="form-group">
-                            <label># Unidades Defectuosas</label>
+                            <!-- UNIDADES DEFECTUOSAS: ahora obligatorio, acepta 0 -->
+                            <label class="required"># Unidades Defectuosas <span style="color: var(--text-secondary); font-weight: 400; font-size: 12px;">(Ingresa 0 si no hay defectos)</span></label>
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <input type="number" id="unidadesDefectuosas" placeholder="0 (opcional)" style="flex: 1;" oninput="calcularPorcentajeHallado()">
+                                <input type="number" id="unidadesDefectuosas" placeholder="0" min="0" required style="flex: 1;" oninput="calcularPorcentajeHallado()">
                                 <div id="indicadorPorcentaje" style="display: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; white-space: nowrap; min-width: 120px; text-align: center;"></div>
                             </div>
                         </div>
@@ -402,10 +413,11 @@
                                 <label class="required">Problema/Defecto</label>
                                 <textarea id="problema" placeholder="Descripción detallada del problema"></textarea>
                             </div>
+                            <!-- TIPO DE TARJETA: ahora obligatorio cuando resultado es NO CONFORME -->
                             <div class="form-group">
-                                <label>Tipo de Tarjeta</label>
+                                <label class="required">Tipo de Tarjeta</label>
                                 <select id="tipoTarjeta">
-                                    <option value="">Sin tarjeta</option>
+                                    <option value="">Seleccionar...</option>
                                     <option value="TARJETA AMARILLA">TARJETA AMARILLA</option>
                                     <option value="TARJETA ROJA">TARJETA ROJA</option>
                                 </select>
@@ -521,7 +533,7 @@
 
     <script>
         // ⚠️ REEMPLAZA ESTO CON TU URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFJ3z2K-2tqCLgnAViql7LMZBkJFoHdcEU6MNrdUL7bWMEJV7v8RUD0IkEI_htbJJW/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLIiTf_eFAt9I4Xpk7oy_DpqLXsZYUuDGSLYOv_hR_ImOitcfzf87Z-cdrjYp1X4ne/exec';
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
@@ -610,7 +622,6 @@
             setSelectValue('inspector', insp['Inspector']);
             setSelectValue('turnoInspeccion', insp['Turno de Inspeccion']);
             document.getElementById('numMaquina').value = insp['N° de Maquina'] || '';
-            // Codigo se carga en campo oculto si existe en el registro
             document.getElementById('codigo').value = insp['Codigo'] || '';
             document.getElementById('producto').value = insp['Producto'] || '';
             document.getElementById('ordenProduccion').value = insp['Orden de Produccion'] || '';
@@ -774,13 +785,15 @@
 
         function calcularPorcentajeHallado() {
             const muestreadas = parseFloat(document.getElementById('unidadesMuestreadas').value) || 0;
-            const defectuosas = parseFloat(document.getElementById('unidadesDefectuosas').value) || 0;
+            const defectuosas = parseFloat(document.getElementById('unidadesDefectuosas').value);
             const ind = document.getElementById('indicadorPorcentaje');
-            if (defectuosas > 0 && muestreadas > 0) {
+            // Mostrar indicador incluso cuando defectuosas es 0
+            if (defectuosas !== null && defectuosas !== undefined && !isNaN(defectuosas) && muestreadas > 0) {
                 const pct = (defectuosas / muestreadas) * 100;
                 ind.style.display = 'block';
                 ind.style.color = 'white';
-                if (pct < 2) { ind.style.background = '#10b981'; ind.textContent = `🟢 ${pct.toFixed(2)}% HALLADO`; }
+                if (pct === 0) { ind.style.background = '#10b981'; ind.textContent = `🟢 0% HALLADO`; }
+                else if (pct < 2) { ind.style.background = '#10b981'; ind.textContent = `🟢 ${pct.toFixed(2)}% HALLADO`; }
                 else if (pct <= 5) { ind.style.background = '#f59e0b'; ind.textContent = `🟡 ${pct.toFixed(2)}% HALLADO`; }
                 else { ind.style.background = '#ef4444'; ind.textContent = `🔴 ${pct.toFixed(2)}% HALLADO`; }
             } else { ind.style.display = 'none'; }
@@ -809,10 +822,12 @@
                 sec.classList.add('active');
                 document.getElementById('tipoDefecto').required = true;
                 document.getElementById('problema').required = true;
+                document.getElementById('tipoTarjeta').required = true; // Obligatorio al mostrar
             } else {
                 sec.classList.remove('active');
                 document.getElementById('tipoDefecto').required = false;
                 document.getElementById('problema').required = false;
+                document.getElementById('tipoTarjeta').required = false; // No obligatorio si no es NC
                 document.getElementById('tipoDefecto').value = '';
                 document.getElementById('problema').value = '';
                 document.getElementById('tipoTarjeta').value = '';
@@ -927,6 +942,8 @@
 
         document.getElementById('formInspeccion').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            // Validar campos "Otros"
             const camposOtros = [
                 { id: 'inspector', label: 'Inspector' },
                 { id: 'coordinadorCalidad', label: 'Coordinador Calidad' },
@@ -938,6 +955,26 @@
                     if (!m.value.trim()) { mostrarAlerta(`⚠️ Por favor escribe el nombre en "${c.label}"`, 'error'); m.focus(); return; }
                 }
             }
+
+            // Validar Unidades Defectuosas (debe ser número >= 0)
+            const defectuosasVal = document.getElementById('unidadesDefectuosas').value;
+            if (defectuosasVal === '' || defectuosasVal === null) {
+                mostrarAlerta('⚠️ Ingresa el número de Unidades Defectuosas. Si no hay defectos, escribe 0.', 'error');
+                document.getElementById('unidadesDefectuosas').focus();
+                return;
+            }
+
+            // Validar Tipo de Tarjeta si resultado es NO CONFORME
+            const resultado = document.getElementById('resultado').value;
+            if (resultado === 'NO CONFORME') {
+                const tipoTarjeta = document.getElementById('tipoTarjeta').value;
+                if (!tipoTarjeta) {
+                    mostrarAlerta('⚠️ Debes seleccionar el Tipo de Tarjeta para una inspección NO CONFORME.', 'error');
+                    document.getElementById('tipoTarjeta').focus();
+                    return;
+                }
+            }
+
             const btn = document.querySelector('button[type="submit"]');
             const orig = btn.innerHTML;
             btn.innerHTML = '<div class="spinner"></div> Guardando...';
@@ -959,7 +996,7 @@
                     coordinadorProduccion: getValor('coordinadorProduccion'),
                     ordenProduccion: document.getElementById('ordenProduccion').value,
                     cantidadProducir: document.getElementById('cantidadProducir').value,
-                    codigo: document.getElementById('codigo').value, // campo oculto, se envía vacío en formulario nuevo
+                    codigo: document.getElementById('codigo').value,
                     producto: document.getElementById('producto').value,
                     operario1: document.getElementById('operario1').value,
                     turnoOperario1: document.getElementById('turnoOperario1').value,
@@ -994,7 +1031,7 @@
         function limpiarFormulario() {
             document.getElementById('formInspeccion').reset();
             document.getElementById('fechaInspeccion').valueAsDate = new Date();
-            document.getElementById('codigo').value = ''; // limpiar campo oculto
+            document.getElementById('codigo').value = '';
             toggleCondicional();
             document.getElementById('cajasSaldoContainer').innerHTML = '';
             cajasSaldoCount = 0;
