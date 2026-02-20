@@ -251,7 +251,7 @@
                         <div class="section-title">🏭 Máquina y Producción</div>
                         <div class="form-group">
                             <label class="required">N° de Máquina</label>
-                            <input type="text" id="numMaquina" required placeholder="Ej:35,10">
+                            <input type="text" id="numMaquina" required placeholder="Ej: 35, 10">
                         </div>
                         <div class="form-group">
                             <label class="required">Coordinador Producción de Turno</label>
@@ -533,7 +533,7 @@
 
     <script>
         // ⚠️ REEMPLAZA ESTO CON TU URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLIiTf_eFAt9I4Xpk7oy_DpqLXsZYUuDGSLYOv_hR_ImOitcfzf87Z-cdrjYp1X4ne/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZ4lt-vjX36BGm4XTXFITRW8NvsNM92RM-iF0yhTFekwbHueKYuQ1xpCm--ucyZdGe/exec';
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
@@ -633,6 +633,16 @@
             document.getElementById('operario2').value = insp['Operario2'] || '';
             setSelectValue('turnoOperario2', insp['Turno operario 2']);
 
+            // ✅ NUEVO: Autorrellenar Fecha de Producción con hoy
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaCajasCompletas').value = hoy;
+
+            // ✅ NUEVO: Autorrellenar Turno de cajas completas con el turno de inspección
+            const turnoInsp = insp['Turno de Inspeccion'] || '';
+            if (turnoInsp) {
+                setSelectValue('turnoCajasCompletas', turnoInsp);
+            }
+
             document.getElementById('suggestionCard').style.display = 'none';
             document.getElementById('busquedaMaquina').value = '';
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -666,7 +676,11 @@
                 </div>
                 <div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,0.15);border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;">
                     <span style="font-size:16px;">📋</span>
-                    <span>Pendiente completar: <strong>Cajas producción → Resultado de inspección → Guardar</strong></span>
+                    <span>Pendiente completar: <strong># Cajas y Unidades → Unidades Defectuosas → Resultado → Guardar</strong></span>
+                </div>
+                <div style="margin-top:8px;padding:8px 12px;background:rgba(255,255,255,0.1);border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:16px;">✨</span>
+                    <span>Autorrellenado: <strong>Fecha de producción</strong> (hoy) y <strong>Turno</strong> (${insp['Turno de Inspeccion']||'—'})</span>
                 </div>`;
             cont.appendChild(al);
             setTimeout(() => {
