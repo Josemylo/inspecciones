@@ -251,7 +251,7 @@
                         <div class="section-title">🏭 Máquina y Producción</div>
                         <div class="form-group">
                             <label class="required">N° de Máquina</label>
-                            <input type="text" id="numMaquina" required placeholder="Ej: 35, 10">
+                            <input type="text" id="numMaquina" required placeholder="Ej: I-35, S-10">
                         </div>
                         <div class="form-group">
                             <label class="required">Coordinador Producción de Turno</label>
@@ -533,7 +533,7 @@
 
     <script>
         // ⚠️ REEMPLAZA ESTO CON TU URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBBJ-LtAFjqTbWJgp2fdEzGH6C5xICrfzfaE7nTyuXhzGLte33tT3lYtOsA6-WxvA6/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzprAgQq2iV9EXpf6jgtVmxzM8p_Qc7DFIFrgKjwrIT9E_AG3E-llmjcfoLsKARoptg/exec';
 
         let cajasSaldoCount = 0;
         let inspecciones = [];
@@ -695,6 +695,9 @@
             if (opt) { sel.value = value; sel.dispatchEvent(new Event('change')); }
         }
 
+        // ✅ OPTIMIZADO: datos de recientes cargados en memoria en un solo viaje
+        let recientesEnMemoria = null;
+
         async function abrirRecientes() {
             const modal = document.getElementById('modalRecientes');
             const body = document.getElementById('recientesBody');
@@ -702,67 +705,93 @@
             inspectorSeleccionado = null;
             modal.classList.add('active');
             title.textContent = '👤 Selecciona Inspector';
-            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando inspectores...</span></div>';
+
+            // ✅ Si ya tenemos datos en memoria, mostrar instantáneamente
+            if (recientesEnMemoria) {
+                mostrarListaInspectores(recientesEnMemoria);
+                return;
+            }
+
+            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Cargando...</span></div>';
+
             try {
-                const res = await fetch(`${SCRIPT_URL}?action=inspectores`);
-                const data = await res.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    body.innerHTML = data.map(insp => `
-                        <div class="inspector-item" onclick="seleccionarInspector('${insp.nombre.replace(/'/g, "\\'")}')">
-                            <div class="inspector-name"><span>👤</span><span>${insp.nombre}</span></div>
-                            <div class="inspector-badge">${insp.cantidad} insp.</div>
-                        </div>`).join('');
-                } else { body.innerHTML = `<div class="empty-recents"><div class="empty-recents-icon">👤</div><div style="font-weight:600;margin-bottom:4px">No hay inspectores recientes</div><div style="font-size:13px">Las inspecciones de las últimas 6 horas aparecerán aquí</div></div>`; }
-            } catch(err) { body.innerHTML = `<div class="empty-recents"><div class="empty-recents-icon">⚠️</div><div style="font-weight:600;color:var(--danger)">Error al cargar</div><div style="font-size:13px">Verifica tu conexión</div></div>`; }
+                // ✅ UN SOLO viaje al servidor que trae TODO junto
+                const res = await fetch(`${SCRIPT_URL}?action=recientesCompleto`);
+                const text = await res.text();
+                let data;
+                try { data = JSON.parse(text); } catch(e) { throw new Error('Respuesta inválida del servidor'); }
+                if (data.error) throw new Error(data.error);
+
+                // ✅ Guardar en memoria para no volver a llamar al servidor
+                recientesEnMemoria = data;
+                mostrarListaInspectores(data);
+
+            } catch(err) {
+                body.innerHTML = `<div class="empty-recents"><div class="empty-recents-icon">⚠️</div><div style="font-weight:600;color:var(--danger)">Error al cargar</div><div style="font-size:13px">Verifica tu conexión</div></div>`;
+            }
         }
 
-        async function seleccionarInspector(inspector) {
+        function mostrarListaInspectores(data) {
+            const body = document.getElementById('recientesBody');
+            const title = document.getElementById('modalTitle');
+            title.textContent = '👤 Selecciona Inspector';
+
+            const inspectores = Object.keys(data);
+            if (inspectores.length === 0) {
+                body.innerHTML = `<div class="empty-recents"><div class="empty-recents-icon">👤</div><div style="font-weight:600;margin-bottom:4px">No hay inspectores recientes</div><div style="font-size:13px">Las inspecciones de las últimas 6 horas aparecerán aquí</div></div>`;
+                return;
+            }
+
+            // Calcular cantidad por inspector para mostrar badge
+            body.innerHTML = inspectores.map(nombre => {
+                const maquinas = data[nombre];
+                const cantidad = maquinas.length;
+                return `<div class="inspector-item" onclick="seleccionarInspector('${nombre.replace(/'/g, "\\'")}')">
+                    <div class="inspector-name"><span>👤</span><span>${nombre}</span></div>
+                    <div class="inspector-badge">${cantidad} máq.</div>
+                </div>`;
+            }).join('');
+        }
+
+        function seleccionarInspector(inspector) {
             const body = document.getElementById('recientesBody');
             const title = document.getElementById('modalTitle');
             inspectorSeleccionado = inspector;
             maquinasDataMap = {};
             title.textContent = `🏭 Máquinas de ${inspector}`;
-            body.innerHTML = '<div class="loading"><div class="spinner"></div><span>Buscando máquinas...</span></div>';
-            try {
-                const url = `${SCRIPT_URL}?action=maquinasPorInspector&inspector=${encodeURIComponent(inspector)}`;
-                const res = await fetch(url);
-                const text = await res.text();
-                let data;
-                try { data = JSON.parse(text); } catch(e) { throw new Error('Respuesta inválida del servidor'); }
-                if (data.error) throw new Error(data.error);
-                if (Array.isArray(data) && data.length > 0) {
-                    data.forEach((maq, idx) => { maquinasDataMap[idx] = maq; });
-                    body.innerHTML = `<button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button>${data.map((maq, idx) => {
-                        const tiempo = calcularTiempoTranscurrido(maq.timestamp);
-                        return `<div class="maquina-item" onclick="cargarInspeccionPorIndice(${idx})">
-                            <div class="maquina-nombre">🏭 ${maq.maquina}</div>
-                            <div class="maquina-tiempo">⏰ ${tiempo}</div></div>`;
-                    }).join('')}`;
-                } else { body.innerHTML = `<button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button><div class="empty-recents"><div class="empty-recents-icon">🏭</div><div style="font-weight:600;margin-bottom:4px">No hay máquinas recientes</div><div style="font-size:13px">Este inspector no tiene inspecciones en las últimas 6 horas</div></div>`; }
-            } catch(err) { body.innerHTML = `<button class="back-button" onclick="abrirRecientes()">← Volver a inspectores</button><div class="empty-recents"><div class="empty-recents-icon">⚠️</div><div style="font-weight:600;color:var(--danger)">Error: ${err.message}</div><div style="font-size:13px">Verifica tu conexión e intenta de nuevo</div></div>`; }
+
+            // ✅ Instantáneo - datos ya están en memoria, sin llamada al servidor
+            const maquinas = recientesEnMemoria[inspector] || [];
+
+            if (maquinas.length === 0) {
+                body.innerHTML = `<button class="back-button" onclick="mostrarListaInspectores(recientesEnMemoria)">← Volver a inspectores</button>
+                    <div class="empty-recents"><div class="empty-recents-icon">🏭</div><div style="font-weight:600;margin-bottom:4px">No hay máquinas recientes</div></div>`;
+                return;
+            }
+
+            maquinas.forEach((maq, idx) => { maquinasDataMap[idx] = maq; });
+
+            body.innerHTML = `<button class="back-button" onclick="mostrarListaInspectores(recientesEnMemoria)">← Volver a inspectores</button>
+                ${maquinas.map((maq, idx) => {
+                    const tiempo = calcularTiempoTranscurrido(maq.timestamp);
+                    return `<div class="maquina-item" onclick="cargarInspeccionPorIndice(${idx})">
+                        <div class="maquina-nombre">🏭 ${maq.maquina}</div>
+                        <div class="maquina-tiempo">⏰ ${tiempo}</div>
+                    </div>`;
+                }).join('')}`;
         }
 
-        async function cargarInspeccionPorIndice(idx) {
+        function cargarInspeccionPorIndice(idx) {
             const maqData = maquinasDataMap[idx];
-            if (!maqData) { cerrarRecientes(); mostrarAlerta('❌ Error: no se encontró la máquina seleccionada', 'error'); return; }
-            const inspector = inspectorSeleccionado;
-            const maquina = maqData.maquina;
-            document.getElementById('modalRecientes').classList.remove('active');
-            const cont = document.getElementById('alertContainer');
-            cont.innerHTML = `<div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:16px 20px;border-radius:12px;margin-bottom:16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(102,126,234,0.4);">
-                <div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;width:24px;height:24px;flex-shrink:0;"></div>
-                <div><div style="font-weight:700;font-size:15px;">Buscando última inspección...</div>
-                <div style="font-size:12px;opacity:0.85;margin-top:2px;">🏭 ${maquina} · 👤 ${inspector}</div></div></div>`;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            try {
-                const url = `${SCRIPT_URL}?action=ultimaInspeccionInspectorMaquina&inspector=${encodeURIComponent(inspector)}&maquina=${encodeURIComponent(maquina)}`;
-                const res = await fetch(url);
-                const text = await res.text();
-                let data;
-                try { data = JSON.parse(text); } catch(e) { throw new Error('Respuesta inválida del servidor'); }
-                if (data && data.encontrada && data.inspeccion) { cargarDatosInspeccion(data.inspeccion); }
-                else { cont.innerHTML = ''; mostrarAlerta(`⚠️ No se encontró inspección reciente para la máquina <strong>${maquina}</strong>. Puedes completar el formulario manualmente.`, 'error'); }
-            } catch(err) { cont.innerHTML = ''; mostrarAlerta('❌ Error al cargar: ' + err.message, 'error'); }
+            if (!maqData || !maqData.inspeccion) {
+                cerrarRecientes();
+                mostrarAlerta('❌ No se encontró la inspección. Intenta de nuevo.', 'error');
+                return;
+            }
+
+            // ✅ Instantáneo - datos ya vienen incluidos desde el primer viaje
+            cerrarRecientes();
+            cargarDatosInspeccion(maqData.inspeccion);
         }
 
         function cerrarRecientes() { document.getElementById('modalRecientes').classList.remove('active'); }
@@ -1037,6 +1066,7 @@
                     body: JSON.stringify(inspeccion)
                 });
                 mostrarAlerta('✅ Inspección guardada exitosamente en Google Sheets', 'success');
+                recientesEnMemoria = null; // ✅ Limpiar caché para que recientes muestre datos frescos
                 limpiarFormulario();
             } catch(err) { mostrarAlerta('❌ Error al guardar. Verifica tu conexión.', 'error'); }
             finally { btn.innerHTML = orig; btn.disabled = false; }
@@ -1194,4 +1224,3 @@
     </script>
 </body>
 </html>
-
